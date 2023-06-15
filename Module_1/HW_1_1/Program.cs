@@ -31,6 +31,8 @@ internal class Program
         int yearsLeftToStartNewUserLife = CalculateRemainingYearsToTheNewLife(age, yearsOfStartingNewUserLife);
 
         PrintUserResults(firstName, lastName, yearsLeftToStartNewUserLife);
+
+        Console.ReadKey();
     }
 
     private static void Greeting()
@@ -54,6 +56,7 @@ internal class Program
 
     private static void PrintUserResults(string firstName, string lastName, int yearsLeftToStartNewUserLife)
     {
-        Console.WriteLine($"{firstName} {lastName} you have {yearsLeftToStartNewUserLife} years left before the start of your new life.");
+        Console.WriteLine();
+        Console.WriteLine($"Wow! {firstName} {lastName} you have {yearsLeftToStartNewUserLife} years left before the start of your new life.");
     }
 }
