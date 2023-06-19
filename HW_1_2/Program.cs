@@ -4,246 +4,266 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        var firstTask = new FirstTask();
-        //int arrayLengthFromUserInput1 = firstTask.GetArrayLengthFromUserInput();
-        //firstTask.CalculateNumbersInTheSpecificRange(arrayLengthFromUserInput1);
-        //firstTask.CalculateNumbersInTheSpecificRangeUsingLinq(arrayLengthFromUserInput1);
+        Startup.StartProgram();
 
-        var secondTask = new SecondTask();
-        int arrayLengthFromUserInput2 = secondTask.GetArrayLengthFromUserInput();
-        secondTask.FilterArrayOfRandomNumbersInTheSpecificRange(arrayLengthFromUserInput2);
-        //secondTask.FilterArrayOfRandomNumbersInTheSpecificRangeUsingLinq(arrayLengthFromUserInput2);
-    }
-}
+        int userChoice = Startup.GetOptionFromUserChoice();
 
-internal enum SortOrder
-{
-    Asc,
-    Desc,
-}
+        ILogger logger = new Logger();
+        ISorter sorter = new Sorter(logger);
 
-internal class SecondTask
-{
-    private const int MinArrayBoundary = -1000;
-    private const int MaxArrayBoundary = 1000;
-    private const int ConditionForFiltering = 888;
+        IArrayService arrayService = new ArrayService(logger, sorter);
 
-    private int[] SortArrayWithoutMutation(int[] array, SortOrder order)
-    {
-        // Creating a copy of the passed array in order not to mutate the original one
-        int[] copiedArray = new int[array.Length];
-        Array.Copy(array, copiedArray, array.Length);
-
-        switch (order)
+        switch (userChoice)
         {
-            case SortOrder.Asc:
-                Array.Sort(copiedArray);
+            case 1:
+                arrayService.CalculateFilteredElementsInRange(minRangeBoundary: -100, maxRangeBoundary: 100);
+                Startup.FinishProgram();
                 break;
-            case SortOrder.Desc:
-                Array.Sort(copiedArray, (x, y) => y.CompareTo(x));
+            case 2:
+                arrayService.FilterArrayByOneNumberAndSort(conditionForFiltering: 888);
+                Startup.FinishProgram();
                 break;
             default:
-                throw new NotImplementedException();
+                Startup.FinishProgram();
+                break;
         }
-
-        return copiedArray;
-    }
-
-    private void DisplayElementsOfArray(int[] array, string message)
-    {
-        Console.WriteLine(message);
-        Array.ForEach(array, (number) => Console.Write($"{number}, "));
-        Console.WriteLine();
-    }
-
-    public int GetArrayLengthFromUserInput()
-    {
-        int arrayLength;
-        int minArrayLength = 20;
-
-        do
-        {
-            Console.Write("Please enter the number of array elements (min 20 elements): ");
-
-            string? userInput = Console.ReadLine();
-
-            Console.WriteLine();
-
-            if (int.TryParse(userInput, out arrayLength))
-            {
-                if (arrayLength >= minArrayLength)
-                {
-                    break;
-                }
-            }
-        } while (arrayLength <= minArrayLength);
-
-        return arrayLength;
-    }
-
-    // The imperative solution of the first part of the homework.
-    public void FilterArrayOfRandomNumbersInTheSpecificRange(int arrayLength)
-    {
-        Console.WriteLine($"There is an array of {arrayLength} elements with random numbers ranging from {MinArrayBoundary} to {MaxArrayBoundary}.");
-
-        #region CreateAndFillInArrays
-
-        int[] arrayOfRandomNumbersA = new int[arrayLength];
-        int[] arrayOfRandomNumbersB = new int[arrayLength];
-
-        for (int i = 0; i < arrayOfRandomNumbersA.Length; i++)
-        {
-            arrayOfRandomNumbersA[i] = new Random().Next(MinArrayBoundary, MaxArrayBoundary);
-
-            if (arrayOfRandomNumbersA[i] <= ConditionForFiltering)
-            {
-                arrayOfRandomNumbersB[i] = arrayOfRandomNumbersA[i];
-            }
-        }
-
-        #endregion
-
-
-        #region DisplayElementsOfArray
-
-        // Display all elements of the arrayOfRandomNumbersA
-        Console.WriteLine();
-        DisplayElementsOfArray(arrayOfRandomNumbersA, "The elements of the arrayOfRandomNumbersA:");
-
-        // Display all elements of the arrayOfRandomNumbersB
-        Console.WriteLine();
-        DisplayElementsOfArray(arrayOfRandomNumbersB, "The elements of the arrayOfRandomNumbersB:");
-
-        #endregion
-
-
-        #region SortByAscAndDesc
-
-        // Sort by ascending
-        Console.WriteLine();
-        var sortedArrayByAsc = SortArrayWithoutMutation(arrayOfRandomNumbersB, SortOrder.Asc);
-        DisplayElementsOfArray(sortedArrayByAsc, "The arrayOfRandomNumbersB is sorted by ascending.");
-
-        // Sort by descending
-        Console.WriteLine();
-        var sortedArrayByDesc = SortArrayWithoutMutation(arrayOfRandomNumbersB, SortOrder.Desc);
-        DisplayElementsOfArray(sortedArrayByDesc, "The arrayOfRandomNumbersB is sorted by descending.");
-
-        #endregion
-
-        Console.ReadKey();
-    }
-
-    // The same solution as above but this one is declarative and uses LINQ
-    public void FilterArrayOfRandomNumbersInTheSpecificRangeUsingLinq(int arrayLength)
-    {
-        Console.WriteLine($"There is an array of {arrayLength} elements with random numbers ranging from {MinArrayBoundary} to {MaxArrayBoundary}.");
-        int[] arrayOfRandomNumbersA = Enumerable.Range(0, arrayLength).Select(n => new Random().Next(MinArrayBoundary, MaxArrayBoundary)).ToArray();
-
-        // Display all elements of the arrayOfRandomNumbersA
-        Console.WriteLine();
-        DisplayElementsOfArray(arrayOfRandomNumbersA, "The elements of the arrayOfRandomNumbersA:");
-
-        // Copy the element of the arrayOfRandomNumbersA if it satisfy the condition. Otherwise the number will we replace with 0.
-        int[] arrayOfRandomNumbersB = arrayOfRandomNumbersA.Select((number) => number <= ConditionForFiltering ? number : 0).ToArray();
-
-        // Display all elements of the arrayOfRandomNumbersB
-        Console.WriteLine();
-        DisplayElementsOfArray(arrayOfRandomNumbersB, "The elements of the arrayOfRandomNumbersB:");
-
-        // Sort by ascending
-        Console.WriteLine();
-        var sortedArrayByAsc = arrayOfRandomNumbersB.OrderBy(x => x).ToArray();
-        DisplayElementsOfArray(sortedArrayByAsc, "The arrayOfRandomNumbersB is sorted by ascending.");
-
-        // Sort by descending
-        Console.WriteLine();
-        var sortedArrayByDesc = arrayOfRandomNumbersB.OrderByDescending(x => x).ToArray();
-        DisplayElementsOfArray(sortedArrayByDesc, "The arrayOfRandomNumbersB is sorted by descending.");
-
-        Console.ReadKey();
     }
 }
 
 
-internal class FirstTask
+// STARTUP UTILITY CLASS
+internal static class Startup
 {
-    private const int MinArrayBoundary = -200;
-    private const int MaxArrayBoundary = 200;
-    private const int MinFilteredArrayBoundary = -100;
-    private const int MaxFilteredArrayBoundary = 100;
-
-    public int GetArrayLengthFromUserInput()
+    private static string[] DisplayOptionsMenu()
     {
-        int arrayLength;
-        int minArrayLength = 1;
+        string[] userMenu = new string[3]
+        {
+            "1. Calculate the number of elements in the array that fall within the range -100 to 100.",
+            "2. Filter all elements of the array which satisfy the condition \"element <= 888\".",
+            "3. Exit.",
+        };
+
+        for (int i = 1; i <= userMenu.Length; i++)
+        {
+            Console.WriteLine($"{userMenu[i - 1]}");
+        }
+
+        return userMenu;
+    }
+
+    public static void StartProgram()
+    {
+        Console.WriteLine("Hello! What would you like to do?");
+        Console.WriteLine();
+    }
+
+    public static void FinishProgram()
+    {
+        Console.WriteLine();
+        Console.WriteLine("Bye! See you next time!");
+        Console.ReadKey();
+    }
+
+    public static int GetOptionFromUserChoice()
+    {
+        int optionNumber;
+        bool isValidChoice = false;
 
         do
         {
-            Console.Write("Please enter the number of array elements (min 1 elements): ");
+            string[] userMenu = DisplayOptionsMenu();
+
+            Console.WriteLine();
+            Console.Write("Enter your answer here: ");
 
             string? userInput = Console.ReadLine();
 
             Console.WriteLine();
 
-            if (int.TryParse(userInput, out arrayLength))
+            if (int.TryParse(userInput, out optionNumber))
             {
-                if (arrayLength >= minArrayLength)
+                if (optionNumber >= 1 && optionNumber <= userMenu.Length)
                 {
-                    break;
+                    isValidChoice = true;
+                }
+                else
+                {
+                    Console.WriteLine("We don't have this option. Please choose one of these options: ");
                 }
             }
+            else
+            {
+                Console.WriteLine("You have entered an invalid number. Please choose one of these options: ");
+            }
+        } while (!isValidChoice);
+
+        return optionNumber;
+    }
+}
+
+// ARRAY SERVICE
+internal interface IArrayService
+{
+    void CalculateFilteredElementsInRange(int minRangeBoundary, int maxRangeBoundary);
+    void FilterArrayByOneNumberAndSort(int conditionForFiltering);
+}
+
+internal class ArrayService : IArrayService
+{
+    private readonly ILogger _logger;
+    private readonly ISorter _sorter;
+
+    private const int MinArrayBoundary = -1000;
+    private const int MaxArrayBoundary = 1000;
+
+    public ArrayService(ILogger logger, ISorter sorter)
+    {
+        _logger = logger;
+        _sorter = sorter;
+    }
+
+    private int GetArrayLengthFromUserInput()
+    {
+        int arrayLength;
+        int minArrayLength = 10;
+
+        do
+        {
+            Console.Write("Please enter the number of array elements (min 10 elements): ");
+
+            string? userInput = Console.ReadLine();
+
+            Console.WriteLine();
+
+            if (!int.TryParse(userInput, out arrayLength)) continue;
+
+            if (arrayLength >= minArrayLength) break;
+
         } while (arrayLength <= minArrayLength);
+
+        Console.WriteLine($"There is an array of {arrayLength} elements with random numbers ranging from {MinArrayBoundary} to {MaxArrayBoundary}.");
 
         return arrayLength;
     }
 
-    // The imperative solution of the first part of the homework.
-    public void CalculateNumbersInTheSpecificRange(int arrayLength)
+    private void GetRandomNumber(out int currentElement)
     {
-        Console.WriteLine($"There is an array of {arrayLength} elements with random numbers ranging from {MinArrayBoundary} to {MaxArrayBoundary}.");
+        currentElement = new Random().Next(MinArrayBoundary, MaxArrayBoundary);
+    }
+
+    public void CalculateFilteredElementsInRange(int minRangeBoundary, int maxRangeBoundary)
+    {
+        int arrayLength = GetArrayLengthFromUserInput();
 
         int numbersInRange = 0;
         int[] arrayOfRandomNumbers = new int[arrayLength];
 
         for (int i = 0; i < arrayOfRandomNumbers.Length; i++)
         {
-            arrayOfRandomNumbers[i] = new Random().Next(MinArrayBoundary, MaxArrayBoundary);
+            GetRandomNumber(out arrayOfRandomNumbers[i]);
 
-            if (arrayOfRandomNumbers[i] >= MinFilteredArrayBoundary && arrayOfRandomNumbers[i] <= MaxFilteredArrayBoundary)
+            if (arrayOfRandomNumbers[i] >= minRangeBoundary && arrayOfRandomNumbers[i] <= maxRangeBoundary)
             {
                 numbersInRange++;
             }
         }
 
         Console.WriteLine();
-        Console.WriteLine("The elements of the array:");
-        arrayOfRandomNumbers.ToList().ForEach(number => Console.Write($"{number}, "));
-        Console.WriteLine();
+        _logger.DisplayElementsOfArray(arrayOfRandomNumbers, "The elements of the original array:");
 
         Console.WriteLine();
-        Console.WriteLine($"The total number of numbers in the range from -100 to 100 is: {numbersInRange}");
-
-        Console.ReadKey();
+        Console.WriteLine($"The total number of numbers in the range from {minRangeBoundary} to {maxRangeBoundary} is: {numbersInRange}");
     }
 
-
-    // The same solution as above but this one is declarative and uses LINQ
-    public void CalculateNumbersInTheSpecificRangeUsingLinq(int arrayLength)
+    public void FilterArrayByOneNumberAndSort(int conditionForFiltering)
     {
-        Console.WriteLine($"There is an array of {arrayLength} elements with random numbers ranging from {MinArrayBoundary} to {MaxArrayBoundary}.");
-        int[] arrayOfRandomNumbers = Enumerable.Range(0, arrayLength).Select(n => new Random().Next(MinArrayBoundary, MaxArrayBoundary)).ToArray();
+        int arrayLength = GetArrayLengthFromUserInput();
+
+        int[] arrayOfRandomNumbersA = new int[arrayLength];
+        int[] arrayOfRandomNumbersB = new int[arrayLength];
+
+        for (int i = 0; i < arrayOfRandomNumbersA.Length; i++)
+        {
+            GetRandomNumber(out arrayOfRandomNumbersA[i]);
+
+            if (arrayOfRandomNumbersA[i] <= conditionForFiltering)
+            {
+                arrayOfRandomNumbersB[i] = arrayOfRandomNumbersA[i];
+            }
+        }
 
         Console.WriteLine();
-        Console.WriteLine("The elements of the array:");
-        arrayOfRandomNumbers.ToList().ForEach(number => Console.Write($"{number}, "));
-        Console.WriteLine();
+        _logger.DisplayElementsOfArray(arrayOfRandomNumbersA, "The elements of the original array:");
 
         Console.WriteLine();
-        int numbersInRange = arrayOfRandomNumbers.Count(number => number is >= MinFilteredArrayBoundary and <= MaxFilteredArrayBoundary);
-        Console.WriteLine($"The total number of numbers in the range from -100 to 100 is {numbersInRange}.");
+        _logger.DisplayElementsOfArray(arrayOfRandomNumbersB, "The elements of the filtered array that are less than or equal to 888:");
 
-        Console.ReadKey();
+        Console.WriteLine();
+        _sorter.SortByAsc(arrayOfRandomNumbersB);
+
+        Console.WriteLine();
+        _sorter.SortByDesc(arrayOfRandomNumbersB);
     }
 }
 
+// LOGGER SERVICE
+internal interface ILogger
+{
+    void DisplayElementsOfArray(int[] array, string message);
+}
+
+internal class Logger : ILogger
+{
+    public void DisplayElementsOfArray(int[] array, string message)
+    {
+        Console.WriteLine(message);
+        Array.ForEach(array, (number) => Console.Write($"{number}, "));
+        Console.WriteLine();
+    }
+}
+
+// SORTER SERVICE
+internal interface ISorter
+{
+    int[] SortByAsc(int[] array);
+    int[] SortByDesc(int[] array);
+}
+
+internal class Sorter : ISorter
+{
+    private readonly ILogger _logger;
+
+    public Sorter(ILogger logger)
+    {
+        _logger = logger;
+    }
+
+    private int[] GetCopyOfOriginalArray(int[] array)
+    {
+        // Creating a copy of the passed array in order not to mutate the original one
+        int[] copiedArray = new int[array.Length];
+        Array.Copy(array, copiedArray, array.Length);
+
+        return copiedArray;
+    }
+
+    public int[] SortByAsc(int[] array)
+    {
+        int[] copiedArray = GetCopyOfOriginalArray(array);
+        Array.Sort(copiedArray);
+
+        _logger.DisplayElementsOfArray(copiedArray, "The array has been sorted by ascending.");
+
+        return copiedArray;
+    }
+
+    public int[] SortByDesc(int[] array)
+    {
+        int[] copiedArray = GetCopyOfOriginalArray(array);
+        Array.Sort(copiedArray, (x, y) => y.CompareTo(x));
+
+        _logger.DisplayElementsOfArray(copiedArray, "The array has been sorted by descending.");
+
+        return copiedArray;
+    }
+}
