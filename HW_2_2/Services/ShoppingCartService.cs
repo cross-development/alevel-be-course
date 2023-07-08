@@ -7,24 +7,19 @@ namespace HW_2_2.Services;
 /// </summary>
 internal class ShoppingCartService
 {
-    private int _productCount = 0;
     private readonly byte _maxCartLength = 10;
     private Product[] _cart = Array.Empty<Product>();
 
-    private string GenerateOrderId()
-    {
-        return Guid.NewGuid().ToString();
-    }
-
+    /// <summary>
+    /// The method is used to add product to the shopping cart.
+    /// </summary>
+    /// <param name="product">Some product.</param>
     public void AddToCart(Product product)
     {
         if (_cart.Length <= _maxCartLength)
         {
             Array.Resize(ref _cart, _cart.Length + 1);
-            _cart[_cart.Length - 1] = product;
-            _productCount++;
-
-            Console.WriteLine($"{product.Name} added to the cart.");
+            _cart[^1] = product;
         }
         else
         {
@@ -32,18 +27,20 @@ internal class ShoppingCartService
         }
     }
 
-    public Order? PlaceOrder()
+    /// <summary>
+    /// The method is used to get all products in the shopping cart.
+    /// </summary>
+    /// <returns>The products from the shopping cart.</returns>
+    public Product[] GetCartProducts()
     {
-        if (_productCount == 0)
-        {
-            return null;
-        };
+        return _cart;
+    }
 
-        Order order = new Order { OrderId = GenerateOrderId(), Products = _cart };
-
+    /// <summary>
+    /// The method is used to clear the shopping cart.
+    /// </summary>
+    public void ClearCart()
+    {
         _cart = Array.Empty<Product>();
-        _productCount = 0;
-
-        return order;
     }
 }

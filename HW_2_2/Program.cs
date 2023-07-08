@@ -8,17 +8,20 @@ namespace HW_2_2;
 /// </summary>
 internal class Program
 {
+    /// <summary>
+    /// Program entry method.
+    /// </summary>
+    /// <param name="args">Some arguments.</param>
     static void Main(string[] args)
     {
         // Repositories
         var productRepository = new ProductRepository();
 
         // Services
-        var productService = new ProductService(productRepository);
+        var notificationService = new NotificationService();
         var shoppingCartService = new ShoppingCartService();
-        var loggerService = new LoggerService();
-        var notificationService = new NotificationService(loggerService);
         var orderService = new OrderService(notificationService);
+        var productService = new ProductService(productRepository);
 
         // Application
         var app = new App(shoppingCartService, orderService, productService);

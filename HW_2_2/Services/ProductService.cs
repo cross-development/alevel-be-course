@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HW_2_2.Entities;
+﻿using HW_2_2.Entities;
 using HW_2_2.Models;
 using HW_2_2.Repositories;
 
@@ -21,12 +16,16 @@ internal class ProductService
         _productRepository = productRepository;
     }
 
+    /// <summary>
+    /// This method is used to get all products.
+    /// </summary>
+    /// <returns>All products in the storage.</returns>
     public Product[] GetAllProducts()
     {
         ProductEntity[] productEntities = _productRepository.GetAllProducts();
         Product[] products = new Product[productEntities.Length];
 
-        // Map Product entity to the Product model
+        // Map the Product entity to the Product model
         for (int i = 0; i < productEntities.Length; i++)
         {
             var currentProductEntity = productEntities[i];

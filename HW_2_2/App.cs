@@ -19,6 +19,9 @@ internal class App
         _productService = productService;
     }
 
+    /// <summary>
+    /// Application entry method.
+    /// </summary>
     public void Start()
     {
         Product[] products = _productService.GetAllProducts();
@@ -28,11 +31,18 @@ internal class App
             _shoppingCartService.AddToCart(product);
         }
 
-        Order? order = _shoppingCartService.PlaceOrder();
+        Product[] cartProducts = _shoppingCartService.GetCartProducts();
 
-        if (order != null)
+        if (cartProducts.Length != 0)
         {
-            _orderService.NotifyBuyer(order);
+            _orderService.PlaceOrder(cartProducts, NotificationType.Email);
+            _shoppingCartService.ClearCart();
         }
+        else
+        {
+            Console.WriteLine("Cart is empty. Cannot place an order.");
+        }
+
+        Console.ReadLine();
     }
 }

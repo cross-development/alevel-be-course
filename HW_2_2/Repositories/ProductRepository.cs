@@ -21,8 +21,9 @@ internal class ProductRepository
         new ProductEntity { Id = Guid.NewGuid().ToString(), Name = "Product 10", Price = 1000},
     };
 
-    public ProductEntity[] GetAllProducts()
-    {
-        return _mockStorage;
-    }
+    /// <summary>
+    /// The method is used to get all products from the storage.
+    /// </summary>
+    /// <returns>All products in the storage.</returns>
+    public ProductEntity[] GetAllProducts() => _mockStorage;
 }

@@ -7,19 +7,44 @@ namespace HW_2_2.Services;
 /// </summary>
 internal class NotificationService
 {
-    private readonly LoggerService _loggerService;
-
-    public NotificationService(LoggerService loggerService)
+    /// <summary>
+    /// The common notification method.
+    /// </summary>
+    /// <param name="notificationType">Shipping method.</param>
+    /// <param name="message">Some message to send.</param>
+    public void Notify(NotificationType notificationType, string message)
     {
-        _loggerService = loggerService;
+        switch (notificationType)
+        {
+            case NotificationType.Email:
+                NotifyByEmail(message);
+                break;
+            case NotificationType.Post:
+                NotifyByPost(message);
+                break;
+            default:
+                NotifyByEmail(message);
+                break;
+        }
     }
 
     /// <summary>
-    /// Notification method.
+    /// The method is used to notify a buyer by email.
     /// </summary>
     /// <param name="message">Some message to send.</param>
-    public void Notify(string message)
+    private void NotifyByEmail(string message)
     {
-        _loggerService.Log(LogType.Info, message);
+        Console.WriteLine(message);
+        Console.WriteLine("Your invoice will be shipped by email.");
+    }
+
+    /// <summary>
+    /// The method is used to notify a buyer by post.
+    /// </summary>
+    /// <param name="message">Some message to send.</param>
+    private void NotifyByPost(string message)
+    {
+        Console.WriteLine(message);
+        Console.WriteLine("Your invoice will be shipped by post.");
     }
 }
