@@ -25,5 +25,8 @@ internal class ProductRepository
     /// The method is used to get all products from the storage.
     /// </summary>
     /// <returns>All products in the storage.</returns>
-    public ProductEntity[] GetAllProducts() => _mockStorage;
+    public ProductEntity[] GetAllProducts()
+    {
+        return _mockStorage;
+    }
 }
