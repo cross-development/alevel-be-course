@@ -12,8 +12,9 @@ namespace HW_2_5.Services;
 /// </summary>
 public sealed class FileService : IFileService
 {
-    private readonly FileOption _fileOptions;
     private readonly string _fileName;
+    private readonly FileOption _fileOptions;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileService"/> class.
@@ -23,6 +24,7 @@ public sealed class FileService : IFileService
     {
         _fileOptions = fileOptions.Value;
         _fileName = $"{DateTime.Now:MM-dd-yyyy-hh-mm-ss-fff}.json";
+        _jsonSerializerOptions = new JsonSerializerOptions { WriteIndented = true };
     }
 
     /// <summary>
@@ -32,32 +34,30 @@ public sealed class FileService : IFileService
     /// <param name="content">Some content to write to a file.</param>
     public void WriteToFile(LogType logType, string content)
     {
-        if (!Directory.Exists(_fileOptions.Path))
-        {
-            Directory.CreateDirectory(_fileOptions.Path);
-        }
+        CreateDirectory(_fileOptions.Path);
 
         string filePath = Path.Combine(_fileOptions.Path, _fileName);
 
         FileInfo fileInfo = new FileInfo(filePath);
 
+        LogRecord? logRecord;
+
         if (!fileInfo.Exists)
         {
-            using (fileInfo.Create())
-            {
-            }
+            fileInfo.Create().Close();
 
-            LogRecord logRecord = new LogRecord();
-            logRecord[logType] = logRecord[logType].Append(content).ToArray();
-
-            SerializeData(filePath, logRecord);
+            logRecord = new LogRecord();
         }
         else
         {
-            LogRecord deserializedLogRecord = DeserializeData(filePath);
-            deserializedLogRecord[logType] = deserializedLogRecord[logType].Append(content).ToArray();
+            logRecord = DeserializeData(filePath);
+        }
 
-            SerializeData(filePath, deserializedLogRecord);
+        if (logRecord != null)
+        {
+            logRecord[logType] = logRecord[logType].Append(content).ToArray();
+
+            SerializeData(filePath, logRecord);
         }
     }
 
@@ -69,11 +69,25 @@ public sealed class FileService : IFileService
     {
         string[] files = Directory.GetFiles(_fileOptions.Path);
 
-        if (files.Length > maxFileCount)
+        if (files.Length <= maxFileCount)
         {
-            string oldestFile = files.OrderBy(file => new FileInfo(file).CreationTime).First();
+            return;
+        }
 
-            File.Delete(oldestFile);
+        string oldestFile = files.OrderBy(file => new FileInfo(file).CreationTime).First();
+
+        File.Delete(oldestFile);
+    }
+
+    /// <summary>
+    /// This method is used to create directory to store log files.
+    /// </summary>
+    /// <param name="path">Directory path.</param>
+    private void CreateDirectory(string path)
+    {
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
         }
     }
 
@@ -82,11 +96,11 @@ public sealed class FileService : IFileService
     /// </summary>
     /// <param name="filePath">A path to the file you need to deserialize.</param>
     /// <returns>The instance of the <see cref="LogRecord"/> class.</returns>
-    private LogRecord DeserializeData(string filePath)
+    private LogRecord? DeserializeData(string filePath)
     {
         string jsonTextContent = File.ReadAllText(filePath);
 
-        return JsonSerializer.Deserialize<LogRecord>(jsonTextContent)!;
+        return JsonSerializer.Deserialize<LogRecord>(jsonTextContent);
     }
 
     /// <summary>
@@ -96,7 +110,7 @@ public sealed class FileService : IFileService
     /// <param name="logRecord">The instance of the <see cref="LogRecord"/> class data to serialize.</param>
     private void SerializeData(string filePath, LogRecord logRecord)
     {
-        string jsonContent = JsonSerializer.Serialize(logRecord, new JsonSerializerOptions { WriteIndented = true });
+        string jsonContent = JsonSerializer.Serialize(logRecord, _jsonSerializerOptions);
 
         File.WriteAllText(filePath, jsonContent);
     }

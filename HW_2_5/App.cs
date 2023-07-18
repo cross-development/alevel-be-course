@@ -72,6 +72,7 @@ public class App
             }
         }
 
+        Console.WriteLine("Press any key to stop the application...");
         Console.ReadKey();
     }
 }
