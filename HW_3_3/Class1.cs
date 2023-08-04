@@ -12,21 +12,11 @@ public sealed class Class1
     public delegate void ShowDelegate(bool result);
 
     /// <summary>
-    /// This field is used to store the reference to the show delegate.
-    /// </summary>
-    private ShowDelegate? _showDelegate;
-
-    /// <summary>
     /// This method is used to set the show delegate.
     /// </summary>
     /// <param name="showDelegate">The show delegate.</param>
-    public void OnShowDelegate(ShowDelegate showDelegate) => _showDelegate = showDelegate;
-
-    /// <summary>
-    /// This method is used to call the show delegate.
-    /// </summary>
-    /// <param name="result">A bool result of dividing without remainder.</param>
-    public void CallShowDelegate(bool result) => _showDelegate?.Invoke(result);
+    /// <returns>The instance of the show delegate.</returns>
+    public ShowDelegate OnShowDelegate(ShowDelegate showDelegate) => showDelegate;
 
     /// <summary>
     /// This method is used to multiply two numbers.

@@ -3,7 +3,7 @@
 /// <summary>
 /// Program entry point.
 /// </summary>
-internal sealed class Program
+public sealed class Program
 {
     /// <summary>
     /// Program entry method.
@@ -14,19 +14,17 @@ internal sealed class Program
         var class1 = new Class1();
         var class2 = new Class2();
 
-        var resultDelegate = class2.Calc(class1.Multiply, 6, 2); // 12
+        var showDelegate = class1.OnShowDelegate(Show);
+        var multiplyDelegate = class1.Multiply;
+        var resultDelegate = class2.Calc(multiplyDelegate, 6, 2); // 12
 
-        class1.OnShowDelegate(Show);
-        class1.CallShowDelegate(resultDelegate(3)); // 12 % 3 = 0 == 0 => true
-        class1.CallShowDelegate(resultDelegate(5)); // 12 % 5 = 2 == 0 => false
+        showDelegate(resultDelegate(3)); // 12 % 3 = 0 == 0 => true
+        showDelegate(resultDelegate(5)); // 12 % 5 = 2 == 0 => false
     }
 
     /// <summary>
     /// This method is used to show in the console the result of dividing without remainder.
     /// </summary>
     /// <param name="result">A bool result of dividing without remainder.</param>
-    private static void Show(bool result)
-    {
-        Console.WriteLine($"Result: {result}");
-    }
+    private static void Show(bool result) => Console.WriteLine($"Result: {result}");
 }
