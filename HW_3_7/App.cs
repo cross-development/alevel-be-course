@@ -21,7 +21,7 @@ public sealed class App
     /// Application entry method.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public async Task Start()
+    public async Task StartAsync()
     {
         if (File.Exists(_logger.FileName))
         {

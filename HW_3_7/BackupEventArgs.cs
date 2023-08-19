@@ -3,7 +3,7 @@
 /// <summary>
 /// Backup event args class.
 /// </summary>
-public class BackupEventArgs : EventArgs
+public sealed class BackupEventArgs : EventArgs
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="BackupEventArgs"/> class.

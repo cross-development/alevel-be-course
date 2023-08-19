@@ -3,7 +3,7 @@
 /// <summary>
 /// Logger class.
 /// </summary>
-public class Logger
+public sealed class Logger
 {
     /// <summary>
     /// Event that used to notify when to back up the log file.
@@ -66,7 +66,7 @@ public class Logger
     /// <summary>
     /// Used to notify when to back up the log file.
     /// </summary>
-    protected virtual void OnBackupRequired()
+    public void OnBackupRequired()
     {
         BackupRequired?.Invoke(this, new BackupEventArgs(FileName));
     }

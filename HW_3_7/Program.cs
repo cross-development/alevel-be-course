@@ -22,6 +22,6 @@ internal class Program
 
         var app = new App(logger);
 
-        await app.Start();
+        await app.StartAsync();
     }
 }
