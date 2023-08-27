@@ -1,7 +1,9 @@
-﻿using HW_4_1.Dto.Responses.Common;
+﻿using HW_4_1.Configs;
+using HW_4_1.Dto.Responses.Common;
 using HW_4_1.Dto.Responses.User;
 using HW_4_1.Interfaces;
 using HW_4_1.Models;
+using Microsoft.Extensions.Options;
 
 namespace HW_4_1.Services;
 
@@ -10,6 +12,17 @@ namespace HW_4_1.Services;
 /// </summary>
 public sealed class UserService : IUserService
 {
+    private readonly IHttpClientService _httpClientService;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UserService"/> class.
+    /// </summary>
+    /// <param name="httpClientService">The implementation of the <see cref="IHttpClientService"/> interface.</param>
+    public UserService(IHttpClientService httpClientService)
+    {
+        _httpClientService = httpClientService;
+    }
+
     /// <summary>
     /// Get user by id.
     /// </summary>
