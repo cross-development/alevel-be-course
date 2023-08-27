@@ -3,7 +3,7 @@
 /// <summary>
 /// Auth DTO.
 /// </summary>
-public class AuthDto
+public sealed class AuthDto
 {
     /// <summary>
     /// Gets or sets email.

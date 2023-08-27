@@ -1,9 +1,9 @@
 ﻿namespace HW_4_1.Dto;
 
 /// <summary>
-/// User request DTO.
+/// User DTO.
 /// </summary>
-public class UserDto
+public sealed class UserDto
 {
     /// <summary>
     /// Gets or sets user name.

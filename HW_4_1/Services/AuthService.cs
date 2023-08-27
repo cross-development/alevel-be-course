@@ -26,11 +26,11 @@ public sealed class AuthService : IAuthService
     /// <param name="username">Username.</param>
     /// <param name="password">Password.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task<LoginResponse> Login(string username, string password)
+    public async Task<LoginResponse> Login(string username, string password)
     {
         var body = new AuthDto { Email = username, Password = password };
 
-        var result = _httpClientService.SendAsync<LoginResponse>("login", HttpMethod.Post, body);
+        var result = await _httpClientService.SendAsync<LoginResponse>("login", HttpMethod.Post, body);
 
         return result;
     }
@@ -41,11 +41,11 @@ public sealed class AuthService : IAuthService
     /// <param name="username">Username.</param>
     /// <param name="password">Password.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task<RegisterResponse> Register(string username, string password)
+    public async Task<RegisterResponse> Register(string username, string password)
     {
         var body = new AuthDto { Email = username, Password = password };
 
-        var result = _httpClientService.SendAsync<RegisterResponse>("register", HttpMethod.Post, body);
+        var result = await _httpClientService.SendAsync<RegisterResponse>("register", HttpMethod.Post, body);
 
         return result;
     }

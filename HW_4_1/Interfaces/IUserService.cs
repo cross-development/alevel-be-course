@@ -33,16 +33,16 @@ public interface IUserService
     /// <summary>
     /// Update user.
     /// </summary>
-    /// <param name="id">User id.</param>
+    /// <param name="userId">User id.</param>
     /// <param name="name">User name.</param>
     /// <param name="job">User position.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task<UpdateUserResponse> UpdateUser(int id, string name, string job);
+    public Task<UpdateUserResponse> UpdateUser(int userId, string name, string job);
 
     /// <summary>
     /// Delete user.
     /// </summary>
     /// <param name="userId">User id.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task DeleteUser(int userId);
+    public Task<DeleteUserResponse> DeleteUser(int userId);
 }

@@ -1,9 +1,8 @@
-﻿using HW_4_1.Configs;
+﻿using HW_4_1.Dto;
 using HW_4_1.Dto.Responses.Common;
 using HW_4_1.Dto.Responses.User;
 using HW_4_1.Interfaces;
 using HW_4_1.Models;
-using Microsoft.Extensions.Options;
 
 namespace HW_4_1.Services;
 
@@ -28,18 +27,22 @@ public sealed class UserService : IUserService
     /// </summary>
     /// <param name="userId">User id.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task<SingleResponse<User>> GetUserById(int userId)
+    public async Task<SingleResponse<User>> GetUserById(int userId)
     {
-        throw new NotImplementedException();
+        var result = await _httpClientService.SendAsync<SingleResponse<User>>($"users/{userId}", HttpMethod.Get);
+
+        return result;
     }
 
     /// <summary>
     /// Get all users.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task<CollectionResponse<User>> GetAllUsers()
+    public async Task<CollectionResponse<User>> GetAllUsers()
     {
-        throw new NotImplementedException();
+        var result = await _httpClientService.SendAsync<CollectionResponse<User>>("users", HttpMethod.Get);
+
+        return result;
     }
 
     /// <summary>
@@ -48,21 +51,29 @@ public sealed class UserService : IUserService
     /// <param name="name">User name.</param>
     /// <param name="job">User position.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task<CreateUserResponse> CreateUser(string name, string job)
+    public async Task<CreateUserResponse> CreateUser(string name, string job)
     {
-        throw new NotImplementedException();
+        var body = new UserDto { Name = name, Job = job };
+
+        var result = await _httpClientService.SendAsync<CreateUserResponse>("users", HttpMethod.Post, body);
+
+        return result;
     }
 
     /// <summary>
     /// Update user.
     /// </summary>
-    /// <param name="id">User id.</param>
+    /// <param name="userId">User id.</param>
     /// <param name="name">User name.</param>
     /// <param name="job">User position.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task<UpdateUserResponse> UpdateUser(int id, string name, string job)
+    public async Task<UpdateUserResponse> UpdateUser(int userId, string name, string job)
     {
-        throw new NotImplementedException();
+        var body = new UserDto { Job = job, Name = name };
+
+        var result = await _httpClientService.SendAsync<UpdateUserResponse>($"users/{userId}", HttpMethod.Put, body);
+
+        return result;
     }
 
     /// <summary>
@@ -70,8 +81,10 @@ public sealed class UserService : IUserService
     /// </summary>
     /// <param name="userId">User id.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task DeleteUser(int userId)
+    public async Task<DeleteUserResponse> DeleteUser(int userId)
     {
-        throw new NotImplementedException();
+        var result = await _httpClientService.SendAsync<DeleteUserResponse>($"users/{userId}", HttpMethod.Delete);
+
+        return result;
     }
 }
