@@ -1,0 +1,28 @@
+version: '3.4'
+services:
+
+  mssql:
+    image: chriseaton/adventureworks:latest
+    container_name: lde.mssql
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: sa_password
+    ports:
+      - 1435:1433
+  
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:latest
+    container_name: lde.cloudbeaver
+    ports:
+      - 8002:8978
+
+networks:
+  default:
+    driver: bridge
+    internal: false
+    attachable: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.4/24
+          gateway: 192.168.0.4
