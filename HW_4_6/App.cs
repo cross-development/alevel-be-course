@@ -57,6 +57,7 @@ public sealed class App
         await GetPet();
         await CreatePet();
         await UpdatePet();
+        await GetUniqueBreedsInCategory();
     }
 
     private async Task GetAllBreeds()
@@ -288,6 +289,20 @@ public sealed class App
         if (isPetUpdated)
         {
             Console.WriteLine("Pet has been updated successfully\n");
+        }
+    }
+
+    private async Task GetUniqueBreedsInCategory()
+    {
+        Console.WriteLine("===== GetUniqueBreedsInCategory =====");
+
+        // age = 3, locationId 1 = Ukraine
+        var categoryBreeds = await _petService.GetUniqueBreedsInCategory(3, 1);
+
+        foreach (var categoryBreed in categoryBreeds)
+        {
+            Console.Write($"Category Name: {categoryBreed.CategoryName}\t");
+            Console.WriteLine($"Breed Count: {categoryBreed.BreedCount}");
         }
     }
 }

@@ -48,6 +48,25 @@ public sealed class PetRepository : IPetRepository
     }
 
     /// <summary>
+    /// Used to get all unique breeds for pets in certain location and start from certain age.
+    /// </summary>
+    /// <param name="age">Pet age.</param>
+    /// <param name="locationId">Location id.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    public async Task<ICollection<CategoryBreed>> GetUniqueBreedsInCategory(int age, int locationId)
+    {
+        return await _context.Pets
+            .Where(pet => pet.Age > age && pet.LocationId == locationId)
+            .GroupBy(pet => pet.Category.CategoryName)
+            .Select(group => new CategoryBreed
+            {
+                CategoryName = group.Key,
+                BreedCount = group.Select(pet => pet.Breed.BreedName).Distinct().Count()
+            })
+            .ToListAsync();
+    }
+
+    /// <summary>
     /// Used to create pet entry in the database.
     /// </summary>
     /// <param name="entity">Pet entity to create a database entry.</param>

@@ -17,6 +17,7 @@ public class MappingProfiles : Profile
         CreateMap<Pet, PetDto>();
         CreateMap<Pet, PetListDto>();
         CreateMap<PetDto, Pet>();
+        CreateMap<CategoryBreed, CategoryBreedDto>();
 
         CreateMap<Breed, BreedDto>();
         CreateMap<Breed, BreedListDto>();

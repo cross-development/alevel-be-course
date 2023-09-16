@@ -67,6 +67,21 @@ public sealed class PetService : IPetService
     }
 
     /// <summary>
+    /// Used to get all unique breeds for pets in certain location and start from certain age.
+    /// </summary>
+    /// <param name="age">Pet age.</param>
+    /// <param name="locationId">Location id.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    public async Task<ICollection<CategoryBreedDto>> GetUniqueBreedsInCategory(int age, int locationId)
+    {
+        var categoryBreeds = await _petRepository.GetUniqueBreedsInCategory(age, locationId);
+
+        var categoryBreedDto = _mapper.Map<ICollection<CategoryBreedDto>>(categoryBreeds);
+
+        return categoryBreedDto;
+    }
+
+    /// <summary>
     ///  Used to create pet.
     /// </summary>
     /// <param name="breedId">Breed id.</param>
