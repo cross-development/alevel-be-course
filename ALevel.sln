@@ -49,12 +49,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HW_4_5", "HW_4_5\HW_4_5.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HW_4_6", "HW_4_6\HW_4_6.csproj", "{B44D4EBF-D46B-4795-894E-98BB441ADFD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HW_6_1", "HW_6_1\HW_6_1.csproj", "{8249BC28-A0E8-4773-84C0-602D15119A19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HW_6_1", "HW_6_1\HW_6_1.csproj", "{8249BC28-A0E8-4773-84C0-602D15119A19}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4AA9CEE6-1C09-4D82-8663-4EFC87183E61}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HW_6_2", "HW_6_2\HW_6_2.csproj", "{6FF69617-E518-4095-B085-E4EC59140EC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -158,6 +160,10 @@ Global
 		{8249BC28-A0E8-4773-84C0-602D15119A19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8249BC28-A0E8-4773-84C0-602D15119A19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8249BC28-A0E8-4773-84C0-602D15119A19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FF69617-E518-4095-B085-E4EC59140EC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FF69617-E518-4095-B085-E4EC59140EC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FF69617-E518-4095-B085-E4EC59140EC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FF69617-E518-4095-B085-E4EC59140EC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
