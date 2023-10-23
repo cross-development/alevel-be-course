@@ -9,9 +9,16 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<CatalogItem, CatalogItemDto>()
-            .ForMember("PictureUrl", options
-                => options.MapFrom<CatalogItemPictureResolver, string>(catalogItem => catalogItem.PictureFileName));
+            .ForMember("PictureUrl", options =>
+                options.MapFrom<CatalogItemPictureResolver, string>(catalogItem => catalogItem.PictureFileName));
+        CreateMap<CatalogItemDto, CatalogItem>()
+            .ForMember("PictureFileName", options =>
+                options.MapFrom<CatalogItemFileResolver, string>(catalogItem => catalogItem.PictureUrl));
+
         CreateMap<CatalogBrand, CatalogBrandDto>();
+        CreateMap<CatalogBrandDto, CatalogBrand>();
+
         CreateMap<CatalogType, CatalogTypeDto>();
+        CreateMap<CatalogTypeDto, CatalogType>();
     }
 }

@@ -21,8 +21,11 @@ builder.Services.Configure<RouteOptions>(options =>
 });
 
 builder.Services.AddTransient<ICatalogItemRepository, CatalogItemRepository>();
-builder.Services.AddTransient<ICatalogService, CatalogService>();
+builder.Services.AddTransient<ICatalogBrandRepository, CatalogBrandRepository>();
+builder.Services.AddTransient<ICatalogTypeRepository, CatalogTypeRepository>();
 builder.Services.AddTransient<ICatalogItemService, CatalogItemService>();
+builder.Services.AddTransient<ICatalogBrandService, CatalogBrandService>();
+builder.Services.AddTransient<ICatalogTypeService, CatalogTypeService>();
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 {

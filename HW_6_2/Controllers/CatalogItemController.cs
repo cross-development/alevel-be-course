@@ -23,8 +23,32 @@ public sealed class CatalogItemController : ControllerBase
     [ProducesResponseType(typeof(AddItemResponse<int?>), StatusCodes.Status201Created)]
     public async Task<IActionResult> Add([FromBody] AddItemRequest request)
     {
-        var result = await _catalogItemService.AddAsync(request);
+        var result = await _catalogItemService.AddCatalogItemAsync(request);
 
         return Created(nameof(Add), new AddItemResponse<int?> { Id = result });
+    }
+
+    [HttpDelete("{id:int}")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Delete([FromRoute] int id)
+    {
+        var item = await _catalogItemService.GetCatalogItemByIdAsync(id);
+
+        if (item == null)
+        {
+            return NotFound();
+        }
+
+        var result = await _catalogItemService.DeleteCatalogItemAsync(item);
+
+        if (!result)
+        {
+            return BadRequest("Could not delete the catalog item");
+        }
+
+        return NoContent();
     }
 }

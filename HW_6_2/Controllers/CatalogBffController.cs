@@ -12,19 +12,76 @@ namespace HW_6_2.Controllers;
 [Route(ComponentDefaults.DefaultRouteV1)]
 public sealed class CatalogBffController : ControllerBase
 {
-    private readonly ICatalogService _catalogService;
+    private readonly ICatalogItemService _catalogItemService;
+    private readonly ICatalogBrandService _catalogBrandService;
+    private readonly ICatalogTypeService _catalogTypeService;
 
-    public CatalogBffController(ICatalogService catalogService)
+    public CatalogBffController(
+        ICatalogItemService catalogItemService,
+        ICatalogBrandService catalogBrandService,
+        ICatalogTypeService catalogTypeService)
     {
-        _catalogService = catalogService;
+        _catalogItemService = catalogItemService;
+        _catalogBrandService = catalogBrandService;
+        _catalogTypeService = catalogTypeService;
     }
 
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(PaginatedResponse<CatalogItemDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Items([FromQuery] PaginatedRequest query)
+    public async Task<IActionResult> Items([FromQuery] PaginatedFilterRequest request)
     {
-        var result = await _catalogService.GetCatalogItemsAsync(query.PageIndex, query.PageSize);
+        var result = await _catalogItemService.GetCatalogItemsAsync(request);
+
+        return Ok(result);
+    }
+
+    [HttpGet("{id:int}")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(CatalogItemDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Item([FromRoute] int id)
+    {
+        var result = await _catalogItemService.GetCatalogItemByIdAsync(id);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(PaginatedResponse<CatalogBrandDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Brands([FromQuery] PaginatedRequest request)
+    {
+        var result = await _catalogBrandService.GetCatalogBrandsAsync(request);
+
+        return Ok(result);
+    }
+
+    [HttpGet("{id:int}")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(CatalogBrandDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Brand([FromRoute] int id)
+    {
+        var result = await _catalogBrandService.GetCatalogBrandByIdAsync(id);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(PaginatedResponse<CatalogTypeDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Types([FromQuery] PaginatedRequest request)
+    {
+        var result = await _catalogTypeService.GetCatalogTypesAsync(request);
+
+        return Ok(result);
+    }
+    
+    [HttpGet("{id:int}")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(CatalogTypeDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Type([FromRoute] int id)
+    {
+        var result = await _catalogTypeService.GetCatalogTypeByIdAsync(id);
 
         return Ok(result);
     }

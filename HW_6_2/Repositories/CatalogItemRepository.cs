@@ -17,14 +17,26 @@ public sealed class CatalogItemRepository : ICatalogItemRepository
         _dbContext = dbContextWrapper.ApplicationDbContext;
     }
 
-    public async Task<PaginatedData<CatalogItem>> GetByPageAsync(int pageIndex, int pageSize)
+    public async Task<PaginatedData<CatalogItem>> GetByPageAsync(int pageIndex, int pageSize, int? brandId, int? typeId)
     {
-        var totalItems = await _dbContext.CatalogItems.LongCountAsync();
+        IQueryable<CatalogItem> query = _dbContext.CatalogItems;
 
-        var itemsOnPage = await _dbContext.CatalogItems
+        if (brandId != null)
+        {
+            query = query.Where(item => item.CatalogBrandId == brandId);
+        }
+
+        if (typeId != null)
+        {
+            query = query.Where(item => item.CatalogTypeId == typeId);
+        }
+
+        var totalItems = await query.LongCountAsync();
+
+        var itemsOnPage = await query
+            .OrderBy(item => item.Name)
             .Include(item => item.CatalogBrand)
             .Include(item => item.CatalogType)
-            .OrderBy(item => item.Name)
             .Skip(pageIndex * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -32,21 +44,42 @@ public sealed class CatalogItemRepository : ICatalogItemRepository
         return new PaginatedData<CatalogItem> { TotalCount = totalItems, Data = itemsOnPage };
     }
 
-    public async Task<int?> AddAsync(AddItemRequest item)
+    public async Task<CatalogItem> GetByIdAsync(int id)
     {
-        var newItem = await _dbContext.AddAsync(new CatalogItem
+        var item = await _dbContext.CatalogItems
+            .Include(item => item.CatalogBrand)
+            .Include(item => item.CatalogType)
+            .FirstOrDefaultAsync(item => item.Id == id);
+
+        return item;
+    }
+
+    public async Task<int?> AddAsync(AddItemRequest request)
+    {
+        var catalogItem = new CatalogItem
         {
-            Name = item.Name,
-            Description = item.Description,
-            Price = item.Price,
-            PictureFileName = item.PictureFileName,
-            AvailableStock = item.AvailableStock,
-            CatalogBrandId = item.CatalogBrandId,
-            CatalogTypeId = item.CatalogTypeId
-        });
+            Name = request.Name,
+            Description = request.Description,
+            Price = request.Price,
+            PictureFileName = request.PictureFileName,
+            AvailableStock = request.AvailableStock,
+            CatalogBrandId = request.CatalogBrandId,
+            CatalogTypeId = request.CatalogTypeId
+        };
+
+        var item = await _dbContext.AddAsync(catalogItem);
 
         await _dbContext.SaveChangesAsync();
 
-        return newItem.Entity.Id;
+        return item.Entity.Id;
+    }
+
+    public async Task<bool> DeleteAsync(CatalogItem catalogItem)
+    {
+        _dbContext.Remove(catalogItem);
+
+        var result = await _dbContext.SaveChangesAsync() > 0;
+
+        return result;
     }
 }
