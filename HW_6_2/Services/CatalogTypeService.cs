@@ -55,18 +55,33 @@ public sealed class CatalogTypeService : BaseDataService<ApplicationDbContext>, 
         });
     }
 
-    public async Task<int?> AddCatalogTypeAsync(AddTypeRequest request)
+    public async Task<CatalogType> FindCatalogTypeAsync(int id)
     {
-        return await ExecuteSafeAsync(() => _catalogTypeRepository.AddAsync(request));
+        return await ExecuteSafeAsync(() => _catalogTypeRepository.FindOneAsync(id));
     }
 
-    public async Task<bool> DeleteCatalogTypeAsync(CatalogTypeDto catalogTypeDto)
+    public async Task<int?> AddCatalogTypeAsync(AddTypeRequest request)
     {
         return await ExecuteSafeAsync(async () =>
         {
-            var catalogType = _mapper.Map<CatalogType>(catalogTypeDto);
+            var catalogType = _mapper.Map<CatalogType>(request);
 
-            return await _catalogTypeRepository.DeleteAsync(catalogType);
+            return await _catalogTypeRepository.AddAsync(catalogType);
         });
+    }
+
+    public async Task<int?> UpdateCatalogTypeAsync(UpdateTypeRequest request, CatalogType catalogType)
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            catalogType.Type = request.Type ?? catalogType.Type;
+
+            return await _catalogTypeRepository.UpdateAsync(catalogType);
+        });
+    }
+
+    public async Task<bool> DeleteCatalogTypeAsync(CatalogType catalogType)
+    {
+        return await ExecuteSafeAsync( () => _catalogTypeRepository.DeleteAsync(catalogType));
     }
 }

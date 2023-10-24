@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using HW_6_2.Configurations;
+using HW_6_2.Helpers;
 using HW_6_2.Data;
 using HW_6_2.Data.Interfaces;
 using HW_6_2.Repositories;
@@ -9,16 +11,15 @@ using HW_6_2.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Conventions.Add(new RouteTokenTransformerConvention(new KebabCaseRouteTransformer()));
+});
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<CatalogConfiguration>(builder.Configuration.GetSection("Api"));
-builder.Services.Configure<RouteOptions>(options =>
-{
-    options.LowercaseUrls = true;
-});
 
 builder.Services.AddTransient<ICatalogItemRepository, CatalogItemRepository>();
 builder.Services.AddTransient<ICatalogBrandRepository, CatalogBrandRepository>();

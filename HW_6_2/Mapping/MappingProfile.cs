@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HW_6_2.Data.Entities;
 using HW_6_2.Models.DTOs;
+using HW_6_2.Models.Requests;
 
 namespace HW_6_2.Mapping;
 
@@ -8,17 +9,15 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        CreateMap<AddItemRequest, CatalogItem>();
         CreateMap<CatalogItem, CatalogItemDto>()
             .ForMember("PictureUrl", options =>
                 options.MapFrom<CatalogItemPictureResolver, string>(catalogItem => catalogItem.PictureFileName));
-        CreateMap<CatalogItemDto, CatalogItem>()
-            .ForMember("PictureFileName", options =>
-                options.MapFrom<CatalogItemFileResolver, string>(catalogItem => catalogItem.PictureUrl));
-
+        
+        CreateMap<AddBrandRequest, CatalogBrand>();
         CreateMap<CatalogBrand, CatalogBrandDto>();
-        CreateMap<CatalogBrandDto, CatalogBrand>();
 
+        CreateMap<AddTypeRequest, CatalogType>();
         CreateMap<CatalogType, CatalogTypeDto>();
-        CreateMap<CatalogTypeDto, CatalogType>();
     }
 }

@@ -55,18 +55,33 @@ public sealed class CatalogBrandService : BaseDataService<ApplicationDbContext>,
         });
     }
 
-    public async Task<int?> AddCatalogBrandAsync(AddBrandRequest request)
+    public async Task<CatalogBrand> FindCatalogBrandAsync(int id)
     {
-        return await ExecuteSafeAsync(() => _catalogBrandRepository.AddAsync(request));
+        return await ExecuteSafeAsync(() => _catalogBrandRepository.FindOneAsync(id));
     }
 
-    public async Task<bool> DeleteCatalogBrandAsync(CatalogBrandDto catalogBrandDto)
+    public async Task<int?> AddCatalogBrandAsync(AddBrandRequest request)
     {
         return await ExecuteSafeAsync(async () =>
         {
-            var catalogBrand = _mapper.Map<CatalogBrand>(catalogBrandDto);
+            var catalogBrand = _mapper.Map<CatalogBrand>(request);
 
-            return await _catalogBrandRepository.DeleteAsync(catalogBrand);
+            return await _catalogBrandRepository.AddAsync(catalogBrand);
         });
+    }
+
+    public async Task<int?> UpdateCatalogBrandAsync(UpdateBrandRequest request, CatalogBrand catalogBrand)
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            catalogBrand.Brand = request.Brand ?? catalogBrand.Brand;
+
+            return await _catalogBrandRepository.UpdateAsync(catalogBrand);
+        });
+    }
+
+    public async Task<bool> DeleteCatalogBrandAsync(CatalogBrand catalogBrand)
+    {
+        return await ExecuteSafeAsync(() => _catalogBrandRepository.DeleteAsync(catalogBrand));
     }
 }

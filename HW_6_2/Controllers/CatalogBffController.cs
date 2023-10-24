@@ -39,9 +39,15 @@ public sealed class CatalogBffController : ControllerBase
     [HttpGet("{id:int}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(CatalogItemDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Item([FromRoute] int id)
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Items([FromRoute] int id)
     {
         var result = await _catalogItemService.GetCatalogItemByIdAsync(id);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
 
         return Ok(result);
     }
@@ -59,9 +65,15 @@ public sealed class CatalogBffController : ControllerBase
     [HttpGet("{id:int}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(CatalogBrandDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Brand([FromRoute] int id)
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Brands([FromRoute] int id)
     {
         var result = await _catalogBrandService.GetCatalogBrandByIdAsync(id);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
 
         return Ok(result);
     }
@@ -79,9 +91,15 @@ public sealed class CatalogBffController : ControllerBase
     [HttpGet("{id:int}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(CatalogTypeDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Type([FromRoute] int id)
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Types([FromRoute] int id)
     {
         var result = await _catalogTypeService.GetCatalogTypeByIdAsync(id);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
 
         return Ok(result);
     }

@@ -3,7 +3,6 @@ using HW_6_2.Data;
 using HW_6_2.Data.Entities;
 using HW_6_2.Data.Interfaces;
 using HW_6_2.Models.Common;
-using HW_6_2.Models.Requests;
 using HW_6_2.Repositories.Interfaces;
 
 namespace HW_6_2.Repositories;
@@ -39,11 +38,25 @@ public sealed class CatalogTypeRepository : ICatalogTypeRepository
         return item;
     }
 
-    public async Task<int?> AddAsync(AddTypeRequest request)
+    public async Task<CatalogType> FindOneAsync(int id)
     {
-        var catalogType = new CatalogType { Type = request.Type };
+        var item = await _dbContext.CatalogTypes.FindAsync(id);
 
+        return item;
+    }
+
+    public async Task<int?> AddAsync(CatalogType catalogType)
+    {
         var item = await _dbContext.AddAsync(catalogType);
+
+        await _dbContext.SaveChangesAsync();
+
+        return item.Entity.Id;
+    }
+
+    public async Task<int?> UpdateAsync(CatalogType catalogType)
+    {
+        var item = _dbContext.Update(catalogType);
 
         await _dbContext.SaveChangesAsync();
 

@@ -32,8 +32,8 @@ public sealed class CatalogItemService : BaseDataService<ApplicationDbContext>, 
         {
             var pageIndex = request.PageIndex;
             var pageSize = request.PageSize;
-            var brandId = request?.BrandId;
-            var typeId = request?.TypeId;
+            var brandId = request.BrandId;
+            var typeId = request.TypeId;
 
             var result = await _catalogItemRepository.GetByPageAsync(pageIndex, pageSize, brandId, typeId);
 
@@ -57,15 +57,39 @@ public sealed class CatalogItemService : BaseDataService<ApplicationDbContext>, 
         });
     }
 
-    public async Task<int?> AddCatalogItemAsync(AddItemRequest request)
+    public async Task<CatalogItem> FindCatalogItemAsync(int id)
     {
-        return await ExecuteSafeAsync(() => _catalogItemRepository.AddAsync(request));
+        return await ExecuteSafeAsync(() => _catalogItemRepository.FindOneAsync(id));
     }
 
-    public async Task<bool> DeleteCatalogItemAsync(CatalogItemDto catalogItemDto)
+    public async Task<int?> AddCatalogItemAsync(AddItemRequest request)
     {
-        var catalogBrand = _mapper.Map<CatalogItem>(catalogItemDto);
+        return await ExecuteSafeAsync(async () =>
+        {
+            var catalogItem = _mapper.Map<CatalogItem>(request);
 
-        return await _catalogItemRepository.DeleteAsync(catalogBrand);
+            return await _catalogItemRepository.AddAsync(catalogItem);
+        });
+    }
+
+    public async Task<int?> UpdateCatalogItemAsync(UpdateItemRequest request, CatalogItem catalogItem)
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            catalogItem.Name = request.Name ?? catalogItem.Name;
+            catalogItem.Description = request.Description ?? catalogItem.Description;
+            catalogItem.Price = request.Price ?? catalogItem.Price;
+            catalogItem.AvailableStock = request.AvailableStock ?? catalogItem.AvailableStock;
+            catalogItem.CatalogTypeId = request.CatalogTypeId ?? catalogItem.CatalogTypeId;
+            catalogItem.CatalogBrandId = request.CatalogBrandId ?? catalogItem.CatalogBrandId;
+            catalogItem.PictureFileName = request.PictureFileName ?? catalogItem.PictureFileName;
+
+            return await _catalogItemRepository.UpdateAsync(catalogItem);
+        });
+    }
+
+    public async Task<bool> DeleteCatalogItemAsync(CatalogItem catalogItem)
+    {
+        return await ExecuteSafeAsync(() => _catalogItemRepository.DeleteAsync(catalogItem));
     }
 }

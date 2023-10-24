@@ -3,7 +3,6 @@ using HW_6_2.Data;
 using HW_6_2.Data.Entities;
 using HW_6_2.Data.Interfaces;
 using HW_6_2.Models.Common;
-using HW_6_2.Models.Requests;
 using HW_6_2.Repositories.Interfaces;
 
 namespace HW_6_2.Repositories;
@@ -39,11 +38,25 @@ public sealed class CatalogBrandRepository : ICatalogBrandRepository
         return item;
     }
 
-    public async Task<int?> AddAsync(AddBrandRequest request)
+    public async Task<CatalogBrand> FindOneAsync(int id)
     {
-        var catalogBrand = new CatalogBrand { Brand = request.Brand };
+        var item = await _dbContext.CatalogBrands.FindAsync(id);
 
+        return item;
+    }
+
+    public async Task<int?> AddAsync(CatalogBrand catalogBrand)
+    {
         var item = await _dbContext.AddAsync(catalogBrand);
+
+        await _dbContext.SaveChangesAsync();
+
+        return item.Entity.Id;
+    }
+
+    public async Task<int?> UpdateAsync(CatalogBrand catalogBrand)
+    {
+        var item = _dbContext.CatalogBrands.Update(catalogBrand);
 
         await _dbContext.SaveChangesAsync();
 
