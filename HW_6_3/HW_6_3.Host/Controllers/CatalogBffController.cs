@@ -1,0 +1,106 @@
+﻿using System.Net.Mime;
+using Microsoft.AspNetCore.Mvc;
+using HW_6_3.Host.Helpers;
+using HW_6_3.Host.Models.DTOs;
+using HW_6_3.Host.Models.Requests;
+using HW_6_3.Host.Models.Responses;
+using HW_6_3.Host.Services.Interfaces;
+
+namespace HW_6_3.Host.Controllers;
+
+[ApiController]
+[Route(ComponentDefaults.DefaultRouteV1)]
+public sealed class CatalogBffController : ControllerBase
+{
+    private readonly ICatalogItemService _catalogItemService;
+    private readonly ICatalogBrandService _catalogBrandService;
+    private readonly ICatalogTypeService _catalogTypeService;
+
+    public CatalogBffController(
+        ICatalogItemService catalogItemService,
+        ICatalogBrandService catalogBrandService,
+        ICatalogTypeService catalogTypeService)
+    {
+        _catalogItemService = catalogItemService;
+        _catalogBrandService = catalogBrandService;
+        _catalogTypeService = catalogTypeService;
+    }
+
+    [HttpGet]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(PaginatedResponse<CatalogItemDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Items([FromQuery] PaginatedFilterRequest request)
+    {
+        var result = await _catalogItemService.GetCatalogItemsAsync(request);
+
+        return Ok(result);
+    }
+
+    [HttpGet("{id:int}")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(CatalogItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Items([FromRoute] int id)
+    {
+        var result = await _catalogItemService.GetCatalogItemByIdAsync(id);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(PaginatedResponse<CatalogBrandDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Brands([FromQuery] PaginatedRequest request)
+    {
+        var result = await _catalogBrandService.GetCatalogBrandsAsync(request);
+
+        return Ok(result);
+    }
+
+    [HttpGet("{id:int}")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(CatalogBrandDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Brands([FromRoute] int id)
+    {
+        var result = await _catalogBrandService.GetCatalogBrandByIdAsync(id);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(PaginatedResponse<CatalogTypeDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Types([FromQuery] PaginatedRequest request)
+    {
+        var result = await _catalogTypeService.GetCatalogTypesAsync(request);
+
+        return Ok(result);
+    }
+    
+    [HttpGet("{id:int}")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(CatalogTypeDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Types([FromRoute] int id)
+    {
+        var result = await _catalogTypeService.GetCatalogTypeByIdAsync(id);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+}
