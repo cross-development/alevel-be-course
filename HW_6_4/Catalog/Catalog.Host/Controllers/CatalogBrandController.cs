@@ -31,7 +31,7 @@ public sealed class CatalogBrandController : ControllerBase
             return BadRequest("Could not add the catalog brand");
         }
 
-        return CreatedAtAction(nameof(Add), new AddItemResponse { Id = result });
+        return CreatedAtAction(nameof(Add), new AddItemResponse { Id = result.Id });
     }
 
     [HttpPatch("{id:int}")]
@@ -55,7 +55,7 @@ public sealed class CatalogBrandController : ControllerBase
             return BadRequest("Could not update the catalog brand");
         }
 
-        return Ok(result);
+        return Ok(new AddItemResponse { Id = result.Id });
     }
 
     [HttpDelete("{id:int}")]

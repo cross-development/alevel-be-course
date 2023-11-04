@@ -55,7 +55,7 @@ public sealed class CatalogTypeService : BaseDataService<ApplicationDbContext>, 
         return await ExecuteSafeAsync(() => _catalogTypeRepository.FindOneAsync(id));
     }
 
-    public async Task<int?> AddCatalogTypeAsync(AddTypeRequest request)
+    public async Task<CatalogType> AddCatalogTypeAsync(AddTypeRequest request)
     {
         return await ExecuteSafeAsync(async () =>
         {
@@ -65,7 +65,7 @@ public sealed class CatalogTypeService : BaseDataService<ApplicationDbContext>, 
         });
     }
 
-    public async Task<int?> UpdateCatalogTypeAsync(UpdateTypeRequest request, CatalogType catalogType)
+    public async Task<CatalogType> UpdateCatalogTypeAsync(UpdateTypeRequest request, CatalogType catalogType)
     {
         return await ExecuteSafeAsync(async () =>
         {

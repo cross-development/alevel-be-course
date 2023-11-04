@@ -13,9 +13,9 @@ public interface ICatalogBrandService
 
     Task<CatalogBrand> FindCatalogBrandAsync(int id);
 
-    Task<int?> AddCatalogBrandAsync(AddBrandRequest request);
+    Task<CatalogBrand> AddCatalogBrandAsync(AddBrandRequest request);
 
-    Task<int?> UpdateCatalogBrandAsync(UpdateBrandRequest request, CatalogBrand catalogBrand);
+    Task<CatalogBrand> UpdateCatalogBrandAsync(UpdateBrandRequest request, CatalogBrand catalogBrand);
 
     Task<bool> DeleteCatalogBrandAsync(CatalogBrand catalogBrand);
 }

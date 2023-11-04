@@ -10,7 +10,6 @@ global using Catalog.Host.Data.Entities;
 global using Catalog.Host.Repositories.Interfaces;
 global using Catalog.Host.Services;
 global using Catalog.Host.Services.Interfaces;
-global using Catalog.Host.Models.Common;
 global using Catalog.Host.Models.DTOs;
 global using Catalog.Host.Models.Requests;
 global using Catalog.Host.Models.Responses;

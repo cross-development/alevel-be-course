@@ -55,7 +55,7 @@ public sealed class CatalogBrandService : BaseDataService<ApplicationDbContext>,
         return await ExecuteSafeAsync(() => _catalogBrandRepository.FindOneAsync(id));
     }
 
-    public async Task<int?> AddCatalogBrandAsync(AddBrandRequest request)
+    public async Task<CatalogBrand> AddCatalogBrandAsync(AddBrandRequest request)
     {
         return await ExecuteSafeAsync(async () =>
         {
@@ -65,7 +65,7 @@ public sealed class CatalogBrandService : BaseDataService<ApplicationDbContext>,
         });
     }
 
-    public async Task<int?> UpdateCatalogBrandAsync(UpdateBrandRequest request, CatalogBrand catalogBrand)
+    public async Task<CatalogBrand> UpdateCatalogBrandAsync(UpdateBrandRequest request, CatalogBrand catalogBrand)
     {
         return await ExecuteSafeAsync(async () =>
         {

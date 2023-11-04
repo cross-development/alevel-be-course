@@ -1,4 +1,6 @@
-﻿namespace Catalog.UnitTests.Services;
+﻿using Moq;
+
+namespace Catalog.UnitTests.Services;
 
 public class CatalogBrandServiceTest
 {
@@ -175,11 +177,9 @@ public class CatalogBrandServiceTest
     public async Task AddCatalogBrandAsync_Success()
     {
         // arrange
-        var testBrandId = 1;
-
         var catalogBrand = new CatalogBrand
         {
-            Id = testBrandId,
+            Id = 1,
             Brand = "TestName"
         };
 
@@ -190,7 +190,7 @@ public class CatalogBrandServiceTest
 
         _catalogBrandRepository.Setup(repository => repository.AddAsync(
                 It.Is<CatalogBrand>(brand => brand.Equals(catalogBrand)))
-        ).ReturnsAsync(testBrandId);
+        ).ReturnsAsync(catalogBrand);
 
         _mapper.Setup(mapper => mapper.Map<CatalogBrand>(
             It.Is<AddBrandRequest>(brand => brand.Equals(addBrandRequest)))
@@ -200,14 +200,14 @@ public class CatalogBrandServiceTest
         var result = await _catalogBrandService.AddCatalogBrandAsync(addBrandRequest);
 
         // assert
-        result.Should().Be(testBrandId);
+        result.Should().Be(catalogBrand);
     }
 
     [Fact]
     public async Task AddCatalogBrandAsync_Failed()
     {
         // arrange
-        int? testResult = null;
+        CatalogBrand? testResult = null;
 
         var addBrandRequest = new AddBrandRequest
         {
@@ -230,11 +230,9 @@ public class CatalogBrandServiceTest
     public async Task UpdateCatalogBrandAsync_Success()
     {
         // arrange
-        var testBrandId = 1;
-
         var catalogBrand = new CatalogBrand
         {
-            Id = testBrandId,
+            Id = 1,
             Brand = "TestName"
         };
 
@@ -247,49 +245,21 @@ public class CatalogBrandServiceTest
 
         _catalogBrandRepository.Setup(repository => repository.UpdateAsync(
             It.Is<CatalogBrand>(brand => brand == catalogBrand))
-        ).ReturnsAsync(testBrandId);
+        ).ReturnsAsync(catalogBrand);
 
         // act
         var result = await _catalogBrandService.UpdateCatalogBrandAsync(updateBrandRequest, catalogBrand);
 
         // assert
         result.Should().NotBeNull();
-        result?.Should().Be(testBrandId);
-    }
-
-    [Fact]
-    public async Task UpdateCatalogBrandAsync_WithDefaultValues_Success()
-    {
-        // arrange
-        var testBrandId = 1;
-
-        var catalogBrand = new CatalogBrand
-        {
-            Id = testBrandId,
-            Brand = "TestName"
-        };
-
-        var updateBrandRequest = new UpdateBrandRequest();
-
-        catalogBrand.Brand = updateBrandRequest.Brand ?? catalogBrand.Brand;
-
-        _catalogBrandRepository.Setup(repository => repository.UpdateAsync(
-            It.Is<CatalogBrand>(brand => brand == catalogBrand))
-        ).ReturnsAsync(testBrandId);
-
-        // act
-        var result = await _catalogBrandService.UpdateCatalogBrandAsync(updateBrandRequest, catalogBrand);
-
-        // assert
-        result.Should().NotBeNull();
-        result?.Should().Be(testBrandId);
+        result?.Should().Be(catalogBrand);
     }
 
     [Fact]
     public async Task UpdateCatalogBrandAsync_Failed()
     {
         // arrange
-        int? testResult = null;
+        CatalogBrand? testResult = null;
 
         var catalogBrand = new CatalogBrand
         {
@@ -313,6 +283,32 @@ public class CatalogBrandServiceTest
 
         // assert
         result.Should().BeNull();
+    }
+    
+    [Fact]
+    public async Task UpdateCatalogBrandAsync_WithDefaultValues_Success()
+    {
+        // arrange
+        var catalogBrand = new CatalogBrand
+        {
+            Id = 1,
+            Brand = "TestName"
+        };
+
+        var updateBrandRequest = new UpdateBrandRequest();
+
+        catalogBrand.Brand = updateBrandRequest.Brand ?? catalogBrand.Brand;
+
+        _catalogBrandRepository.Setup(repository => repository.UpdateAsync(
+            It.Is<CatalogBrand>(brand => brand == catalogBrand))
+        ).ReturnsAsync(catalogBrand);
+
+        // act
+        var result = await _catalogBrandService.UpdateCatalogBrandAsync(updateBrandRequest, catalogBrand);
+
+        // assert
+        result.Should().NotBeNull();
+        result?.Should().Be(catalogBrand);
     }
 
     [Fact]

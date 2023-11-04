@@ -13,9 +13,9 @@ public interface ICatalogItemService
 
     Task<CatalogItem> FindCatalogItemAsync(int id);
 
-    Task<int?> AddCatalogItemAsync(AddItemRequest request);
+    Task<CatalogItem> AddCatalogItemAsync(AddItemRequest request);
 
-    Task<int?> UpdateCatalogItemAsync(UpdateItemRequest request, CatalogItem catalogItem);
+    Task<CatalogItem> UpdateCatalogItemAsync(UpdateItemRequest request, CatalogItem catalogItem);
 
     Task<bool> DeleteCatalogItemAsync(CatalogItem catalogItem);
 }

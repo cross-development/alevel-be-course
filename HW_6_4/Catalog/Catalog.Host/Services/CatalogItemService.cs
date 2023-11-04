@@ -8,6 +8,7 @@ using Catalog.Host.Models.Requests;
 using Catalog.Host.Models.Responses;
 using Catalog.Host.Services.Interfaces;
 using Catalog.Host.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Host.Services;
 
@@ -31,19 +32,16 @@ public sealed class CatalogItemService : BaseDataService<ApplicationDbContext>, 
     {
         return await ExecuteSafeAsync(async () =>
         {
-            var page = request.Page;
-            var limit = request.Limit;
-            var brandId = request.BrandId;
-            var typeId = request.TypeId;
+            var result = await _catalogItemRepository.GetAllAsync(request);
 
-            var result = await _catalogItemRepository.GetByPageAsync(page, limit, brandId, typeId);
+            var totalCount = await _catalogItemRepository.GetCountAsync();
 
             return new PaginatedResponse<CatalogItemDto>
             {
-                Page = page,
-                Limit = limit,
-                Count = result.TotalCount,
-                Data = result.Data.Select(item => _mapper.Map<CatalogItemDto>(item)).ToList()
+                Page = request.Page,
+                Limit = request.Limit,
+                Count = totalCount,
+                Data = result.Select(item => _mapper.Map<CatalogItemDto>(item)).ToList()
             };
         });
     }
@@ -63,7 +61,7 @@ public sealed class CatalogItemService : BaseDataService<ApplicationDbContext>, 
         return await ExecuteSafeAsync(() => _catalogItemRepository.FindOneAsync(id));
     }
 
-    public async Task<int?> AddCatalogItemAsync(AddItemRequest request)
+    public async Task<CatalogItem> AddCatalogItemAsync(AddItemRequest request)
     {
         return await ExecuteSafeAsync(async () =>
         {
@@ -73,7 +71,7 @@ public sealed class CatalogItemService : BaseDataService<ApplicationDbContext>, 
         });
     }
 
-    public async Task<int?> UpdateCatalogItemAsync(UpdateItemRequest request, CatalogItem catalogItem)
+    public async Task<CatalogItem> UpdateCatalogItemAsync(UpdateItemRequest request, CatalogItem catalogItem)
     {
         return await ExecuteSafeAsync(async () =>
         {

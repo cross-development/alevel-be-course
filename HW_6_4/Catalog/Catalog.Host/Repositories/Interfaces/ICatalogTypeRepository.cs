@@ -2,17 +2,7 @@
 
 namespace Catalog.Host.Repositories.Interfaces;
 
-public interface ICatalogTypeRepository
+public interface ICatalogTypeRepository : IBaseRepository<CatalogType>
 {
-    Task<IEnumerable<CatalogType>> GetAllAsync();
 
-    Task<CatalogType> GetByIdAsync(int id);
-
-    Task<CatalogType> FindOneAsync(int id);
-
-    Task<int?> AddAsync(CatalogType catalogType);
-
-    Task<int?> UpdateAsync(CatalogType catalogType);
-
-    Task<bool> DeleteAsync(CatalogType catalogType);
 }

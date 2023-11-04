@@ -1,4 +1,7 @@
-﻿namespace Catalog.UnitTests.Services;
+﻿using Microsoft.EntityFrameworkCore;
+using Moq;
+
+namespace Catalog.UnitTests.Services;
 
 public class CatalogItemServiceTest
 {
@@ -39,33 +42,7 @@ public class CatalogItemServiceTest
     public async Task GetCatalogItemsAsync_Success()
     {
         // arrange
-        var testPage = 0;
-        var testLimit = 4;
-        var testTotalCount = 12;
-        var testBrandId = 1;
-        var testTypeId = 1;
-
-        var paginatedItemsSuccess = new PaginatedData<CatalogItem>
-        {
-            Data = new List<CatalogItem>
-            {
-                new CatalogItem
-                {
-                    Name = "TestName",
-                    CatalogBrandId = 1,
-                    CatalogTypeId = 1
-                }
-            },
-            TotalCount = testTotalCount,
-        };
-
-        var paginatedFilterRequest = new PaginatedItemRequest
-        {
-            Limit = testLimit,
-            Page = testPage,
-            BrandId = testBrandId,
-            TypeId = testTypeId
-        };
+        var testTotalCount = 1;
 
         var catalogItem = new CatalogItem
         {
@@ -74,17 +51,27 @@ public class CatalogItemServiceTest
             CatalogTypeId = 1
         };
 
-        var catalogItemDto = new CatalogItemDto
+        var itemsListSuccess = new List<CatalogItem> { catalogItem };
+
+        var paginatedFilterRequest = new PaginatedItemRequest
         {
-            Name = "TestName"
+            Limit = 10,
+            Page = 1,
+            BrandId = 1,
+            TypeId = 1
         };
 
-        _catalogItemRepository.Setup(repository => repository.GetByPageAsync(
-            It.Is<int>(pageIndex => pageIndex == testPage),
-            It.Is<int>(pageSize => pageSize == testLimit),
-            It.Is<int?>(brandId => brandId == testBrandId),
-            It.Is<int?>(typeId => typeId == testTypeId))
-        ).ReturnsAsync(paginatedItemsSuccess);
+        var catalogItemDto = new CatalogItemDto
+        {
+            Name = catalogItem.Name
+        };
+
+        _catalogItemRepository.Setup(repository => repository.GetAllAsync(
+            It.Is<PaginatedItemRequest>(item => item.Equals(paginatedFilterRequest)))
+        ).ReturnsAsync(itemsListSuccess);
+
+        _catalogItemRepository.Setup(repository => repository.GetCountAsync()
+        ).ReturnsAsync(testTotalCount);
 
         _mapper.Setup(mapper => mapper.Map<CatalogItemDto>(
             It.Is<CatalogItem>(item => item.Equals(catalogItem)))
@@ -97,8 +84,8 @@ public class CatalogItemServiceTest
         result.Should().NotBeNull();
         result?.Data.Should().NotBeNull();
         result?.Count.Should().Be(testTotalCount);
-        result?.Page.Should().Be(testPage);
-        result?.Limit.Should().Be(testLimit);
+        result?.Page.Should().Be(paginatedFilterRequest.Page);
+        result?.Limit.Should().Be(paginatedFilterRequest.Limit);
     }
 
     [Fact]
@@ -118,11 +105,8 @@ public class CatalogItemServiceTest
             TypeId = testTypeId
         };
 
-        _catalogItemRepository.Setup(repository => repository.GetByPageAsync(
-            It.Is<int>(pageIndex => pageIndex == testPage),
-            It.Is<int>(pageSize => pageSize == testLimit),
-            It.Is<int?>(brandId => brandId == testBrandId),
-            It.Is<int?>(typeId => typeId == testTypeId))
+        _catalogItemRepository.Setup(repository => repository.GetAllAsync(
+            It.Is<PaginatedItemRequest>(item => item.Equals(paginatedFilterRequest)))
         ).Returns((Func<PaginatedResponse<CatalogItemDto>>)null!);
 
         // act
@@ -234,8 +218,6 @@ public class CatalogItemServiceTest
     public async Task AddCatalogItemAsync_Success()
     {
         // arrange
-        var testResult = 1;
-
         var addItemRequest = new AddItemRequest
         {
             Name = _testItem.Name,
@@ -249,7 +231,7 @@ public class CatalogItemServiceTest
 
         _catalogItemRepository.Setup(repository => repository.AddAsync(
             It.Is<CatalogItem>(item => item.Equals(_testItem)))
-        ).ReturnsAsync(testResult);
+        ).ReturnsAsync(_testItem);
 
         _mapper.Setup(mapper => mapper.Map<CatalogItem>(
             It.Is<AddItemRequest>(item => item.Equals(addItemRequest)))
@@ -259,14 +241,14 @@ public class CatalogItemServiceTest
         var result = await _catalogItemService.AddCatalogItemAsync(addItemRequest);
 
         // assert
-        result.Should().Be(testResult);
+        result.Should().Be(_testItem);
     }
 
     [Fact]
     public async Task AddCatalogItemAsync_Failed()
     {
         // arrange
-        int? testResult = null;
+        CatalogItem? testResult = null;
 
         var addItemRequest = new AddItemRequest
         {
@@ -294,11 +276,9 @@ public class CatalogItemServiceTest
     public async Task UpdateCatalogItemAsync_Success()
     {
         // arrange
-        var testItemId = 1;
-
         var catalogItem = new CatalogItem
         {
-            Id = testItemId,
+            Id = 1,
             Name = _testItem.Name,
             Description = _testItem.Description,
             Price = _testItem.Price,
@@ -329,61 +309,21 @@ public class CatalogItemServiceTest
 
         _catalogItemRepository.Setup(repository => repository.UpdateAsync(
             It.Is<CatalogItem>(brand => brand == catalogItem))
-        ).ReturnsAsync(testItemId);
+        ).ReturnsAsync(catalogItem);
 
         // act
         var result = await _catalogItemService.UpdateCatalogItemAsync(updateItemRequest, catalogItem);
 
         // assert
         result.Should().NotBeNull();
-        result?.Should().Be(testItemId);
-    }
-
-    [Fact]
-    public async Task UpdateCatalogItemAsync_WithDefaultValues_Success()
-    {
-        // arrange
-        var testItemId = 1;
-
-        var catalogItem = new CatalogItem
-        {
-            Id = testItemId,
-            Name = _testItem.Name,
-            Description = _testItem.Description,
-            Price = _testItem.Price,
-            PictureFileName = _testItem.PictureFileName,
-            AvailableStock = _testItem.AvailableStock,
-            CatalogBrandId = _testItem.CatalogBrandId,
-            CatalogTypeId = _testItem.CatalogTypeId
-        };
-
-        var updateItemRequest = new UpdateItemRequest();
-
-        catalogItem.Name = updateItemRequest.Name ?? catalogItem.Name;
-        catalogItem.Description = updateItemRequest.Description ?? catalogItem.Description;
-        catalogItem.Price = updateItemRequest.Price ?? catalogItem.Price;
-        catalogItem.PictureFileName = updateItemRequest.PictureFileName ?? catalogItem.PictureFileName;
-        catalogItem.AvailableStock = updateItemRequest.AvailableStock ?? catalogItem.AvailableStock;
-        catalogItem.CatalogBrandId = updateItemRequest.CatalogBrandId ?? catalogItem.CatalogBrandId;
-        catalogItem.CatalogTypeId = updateItemRequest.CatalogTypeId ?? catalogItem.CatalogTypeId;
-
-        _catalogItemRepository.Setup(repository => repository.UpdateAsync(
-            It.Is<CatalogItem>(brand => brand == catalogItem))
-        ).ReturnsAsync(testItemId);
-
-        // act
-        var result = await _catalogItemService.UpdateCatalogItemAsync(updateItemRequest, catalogItem);
-
-        // assert
-        result.Should().NotBeNull();
-        result?.Should().Be(testItemId);
+        result?.Should().Be(catalogItem);
     }
 
     [Fact]
     public async Task UpdateCatalogItemAsync_Failed()
     {
         // arrange
-        int? testResult = null;
+        CatalogItem? testResult = null;
 
         var catalogItem = new CatalogItem
         {
@@ -425,6 +365,44 @@ public class CatalogItemServiceTest
 
         // assert
         result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task UpdateCatalogItemAsync_WithDefaultValues_Success()
+    {
+        // arrange
+        var catalogItem = new CatalogItem
+        {
+            Id = 1,
+            Name = _testItem.Name,
+            Description = _testItem.Description,
+            Price = _testItem.Price,
+            PictureFileName = _testItem.PictureFileName,
+            AvailableStock = _testItem.AvailableStock,
+            CatalogBrandId = _testItem.CatalogBrandId,
+            CatalogTypeId = _testItem.CatalogTypeId
+        };
+
+        var updateItemRequest = new UpdateItemRequest();
+
+        catalogItem.Name = updateItemRequest.Name ?? catalogItem.Name;
+        catalogItem.Description = updateItemRequest.Description ?? catalogItem.Description;
+        catalogItem.Price = updateItemRequest.Price ?? catalogItem.Price;
+        catalogItem.PictureFileName = updateItemRequest.PictureFileName ?? catalogItem.PictureFileName;
+        catalogItem.AvailableStock = updateItemRequest.AvailableStock ?? catalogItem.AvailableStock;
+        catalogItem.CatalogBrandId = updateItemRequest.CatalogBrandId ?? catalogItem.CatalogBrandId;
+        catalogItem.CatalogTypeId = updateItemRequest.CatalogTypeId ?? catalogItem.CatalogTypeId;
+
+        _catalogItemRepository.Setup(repository => repository.UpdateAsync(
+            It.Is<CatalogItem>(brand => brand == catalogItem))
+        ).ReturnsAsync(catalogItem);
+
+        // act
+        var result = await _catalogItemService.UpdateCatalogItemAsync(updateItemRequest, catalogItem);
+
+        // assert
+        result.Should().NotBeNull();
+        result?.Should().Be(catalogItem);
     }
 
     [Fact]

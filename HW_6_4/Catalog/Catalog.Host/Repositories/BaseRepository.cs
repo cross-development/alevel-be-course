@@ -1,4 +1,5 @@
-﻿using Infrastructure.Data.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Infrastructure.Data.Interfaces;
 using Catalog.Host.Data;
 using Catalog.Host.Models.Requests;
 using Catalog.Host.Repositories.Interfaces;
@@ -15,7 +16,22 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>
         _dbContext = dbContextWrapper.ApplicationDbContext;
     }
 
-    public abstract Task<IEnumerable<TEntity>> GetAllAsync(PaginatedItemRequest request);
+    public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
+    {
+        return await _dbContext.Set<TEntity>().ToListAsync();
+    }
+
+    public virtual async Task<IEnumerable<TEntity>> GetAllAsync(PaginatedItemRequest request)
+    {
+        IQueryable<TEntity> query = _dbContext.Set<TEntity>();
+
+        if (request is { Page: > 0, Limit: > 0 })
+        {
+            query = query.Skip((request.Page - 1) * request.Limit).Take(request.Limit);
+        }
+
+        return await query.ToListAsync();
+    }
 
     public abstract Task<TEntity> GetByIdAsync(int id);
 
@@ -24,9 +40,9 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>
         return await _dbContext.Set<TEntity>().FindAsync(id);
     }
 
-    public IQueryable<TEntity> GetQueryable()
+    public async Task<int> GetCountAsync()
     {
-        return _dbContext.Set<TEntity>();
+        return await _dbContext.Set<TEntity>().CountAsync();
     }
 
     public async Task<TEntity> AddAsync(TEntity entity)
@@ -51,8 +67,6 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>
     {
         _dbContext.Remove(entity);
 
-        var result = await _dbContext.SaveChangesAsync() > 0;
-
-        return result;
+        return await _dbContext.SaveChangesAsync() > 0;
     }
 }

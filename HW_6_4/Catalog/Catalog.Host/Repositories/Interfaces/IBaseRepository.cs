@@ -4,13 +4,15 @@ namespace Catalog.Host.Repositories.Interfaces;
 
 public interface IBaseRepository<TEntity>
 {
+    Task<IEnumerable<TEntity>> GetAllAsync();
+
     Task<IEnumerable<TEntity>> GetAllAsync(PaginatedItemRequest request);
 
     Task<TEntity> GetByIdAsync(int id);
 
     Task<TEntity> FindOneAsync(int id);
 
-    IQueryable<TEntity> GetQueryable();
+    Task<int> GetCountAsync();
 
     Task<TEntity> AddAsync(TEntity entity);
 

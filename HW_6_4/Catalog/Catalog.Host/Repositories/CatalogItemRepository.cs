@@ -2,88 +2,52 @@
 using Infrastructure.Data.Interfaces;
 using Catalog.Host.Data;
 using Catalog.Host.Data.Entities;
-using Catalog.Host.Models.Common;
+using Catalog.Host.Models.Requests;
 using Catalog.Host.Repositories.Interfaces;
 
 namespace Catalog.Host.Repositories;
 
-public sealed class CatalogItemRepository : ICatalogItemRepository
+public sealed class CatalogItemRepository : BaseRepository<CatalogItem>, ICatalogItemRepository
 {
     private readonly ApplicationDbContext _dbContext;
 
     public CatalogItemRepository(IApplicationDbContextWrapper<ApplicationDbContext> dbContextWrapper)
+        : base(dbContextWrapper)
     {
         _dbContext = dbContextWrapper.ApplicationDbContext;
     }
 
-    public async Task<PaginatedData<CatalogItem>> GetByPageAsync(int page, int limit, int? brandId, int? typeId)
+    public override async Task<IEnumerable<CatalogItem>> GetAllAsync(PaginatedItemRequest request)
     {
         IQueryable<CatalogItem> query = _dbContext.CatalogItems;
 
-        if (brandId != null)
+        if (request?.BrandId != null)
         {
-            query = query.Where(item => item.CatalogBrandId == brandId);
+            query = query.Where(item => item.CatalogBrandId == request.BrandId);
         }
 
-        if (typeId != null)
+        if (request?.TypeId != null)
         {
-            query = query.Where(item => item.CatalogTypeId == typeId);
+            query = query.Where(item => item.CatalogTypeId == request.TypeId);
         }
 
-        var totalItems = await query.CountAsync();
+        if (request?.Page > 0 && request?.Limit > 0)
+        {
+            query = query.Skip((request.Page - 1) * request.Limit).Take(request.Limit);
+        }
 
-        var itemsOnPage = await query
+        return await query
             .OrderBy(item => item.Name)
             .Include(item => item.CatalogBrand)
             .Include(item => item.CatalogType)
-            .Skip((page - 1) * limit)
-            .Take(limit)
             .ToListAsync();
-
-        return new PaginatedData<CatalogItem> { TotalCount = totalItems, Data = itemsOnPage };
     }
 
-    public async Task<CatalogItem> GetByIdAsync(int id)
+    public override async Task<CatalogItem> GetByIdAsync(int id)
     {
-        var item = await _dbContext.CatalogItems
+        return await _dbContext.CatalogItems
             .Include(item => item.CatalogBrand)
             .Include(item => item.CatalogType)
             .FirstOrDefaultAsync(item => item.Id == id);
-
-        return item;
-    }
-
-    public async Task<CatalogItem> FindOneAsync(int id)
-    {
-        var item = await _dbContext.CatalogItems.FindAsync(id);
-
-        return item;
-    }
-
-    public async Task<int?> AddAsync(CatalogItem catalogItem)
-    {
-        var item = await _dbContext.AddAsync(catalogItem);
-
-        await _dbContext.SaveChangesAsync();
-
-        return item.Entity.Id;
-    }
-
-    public async Task<int?> UpdateAsync(CatalogItem catalogItem)
-    {
-        var item = _dbContext.Update(catalogItem);
-
-        await _dbContext.SaveChangesAsync();
-
-        return item.Entity.Id;
-    }
-
-    public async Task<bool> DeleteAsync(CatalogItem catalogItem)
-    {
-        _dbContext.Remove(catalogItem);
-
-        var result = await _dbContext.SaveChangesAsync() > 0;
-
-        return result;
     }
 }

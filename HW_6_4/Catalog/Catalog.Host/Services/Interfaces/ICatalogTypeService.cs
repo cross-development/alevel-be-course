@@ -13,9 +13,9 @@ public interface ICatalogTypeService
 
     Task<CatalogType> FindCatalogTypeAsync(int id);
 
-    Task<int?> AddCatalogTypeAsync(AddTypeRequest request);
+    Task<CatalogType> AddCatalogTypeAsync(AddTypeRequest request);
 
-    Task<int?> UpdateCatalogTypeAsync(UpdateTypeRequest request, CatalogType catalogType);
+    Task<CatalogType> UpdateCatalogTypeAsync(UpdateTypeRequest request, CatalogType catalogType);
 
     Task<bool> DeleteCatalogTypeAsync(CatalogType catalogType);
 }

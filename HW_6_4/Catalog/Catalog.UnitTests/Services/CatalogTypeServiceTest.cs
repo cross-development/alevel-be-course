@@ -1,4 +1,6 @@
-﻿namespace Catalog.UnitTests.Services;
+﻿using Moq;
+
+namespace Catalog.UnitTests.Services;
 
 public class CatalogTypeServiceTest
 {
@@ -174,11 +176,9 @@ public class CatalogTypeServiceTest
     [Fact]
     public async Task AddCatalogTypeAsync_Success()
     {
-        var testTypeId = 1;
-
         var catalogType = new CatalogType
         {
-            Id = testTypeId,
+            Id = 1,
             Type = "TestName"
         };
 
@@ -189,7 +189,7 @@ public class CatalogTypeServiceTest
 
         _catalogTypeRepository.Setup(repository => repository.AddAsync(
             It.Is<CatalogType>(type => type.Equals(catalogType)))
-        ).ReturnsAsync(testTypeId);
+        ).ReturnsAsync(catalogType);
 
         _mapper.Setup(mapper => mapper.Map<CatalogType>(
             It.Is<AddTypeRequest>(type => type.Equals(addTypeRequest)))
@@ -199,14 +199,14 @@ public class CatalogTypeServiceTest
         var result = await _catalogTypeService.AddCatalogTypeAsync(addTypeRequest);
 
         // assert
-        result.Should().Be(testTypeId);
+        result.Should().Be(catalogType);
     }
 
     [Fact]
     public async Task AddCatalogTypeAsync_Failed()
     {
         // arrange
-        int? testResult = null;
+        CatalogType? testResult = null;
 
         var addTypeRequest = new AddTypeRequest
         {
@@ -228,11 +228,9 @@ public class CatalogTypeServiceTest
     public async Task UpdateCatalogTypeAsync_Success()
     {
         // arrange
-        var testTypeId = 1;
-
         var catalogType = new CatalogType
         {
-            Id = testTypeId,
+            Id = 1,
             Type = "TestName"
         };
 
@@ -245,49 +243,21 @@ public class CatalogTypeServiceTest
 
         _catalogTypeRepository.Setup(repository => repository.UpdateAsync(
             It.Is<CatalogType>(type => type == catalogType))
-        ).ReturnsAsync(testTypeId);
+        ).ReturnsAsync(catalogType);
 
         // act
         var result = await _catalogTypeService.UpdateCatalogTypeAsync(updateTypeRequest, catalogType);
 
         // assert
         result.Should().NotBeNull();
-        result?.Should().Be(testTypeId);
-    }
-
-    [Fact]
-    public async Task UpdateCatalogTypeAsync_WithDefaultValues_Success()
-    {
-        // arrange
-        var testTypeId = 1;
-
-        var catalogType = new CatalogType
-        {
-            Id = testTypeId,
-            Type = "TestName"
-        };
-
-        var updateTypeRequest = new UpdateTypeRequest();
-
-        catalogType.Type = updateTypeRequest.Type ?? catalogType.Type;
-
-        _catalogTypeRepository.Setup(repository => repository.UpdateAsync(
-            It.Is<CatalogType>(type => type == catalogType))
-        ).ReturnsAsync(testTypeId);
-
-        // act
-        var result = await _catalogTypeService.UpdateCatalogTypeAsync(updateTypeRequest, catalogType);
-
-        // assert
-        result.Should().NotBeNull();
-        result?.Should().Be(testTypeId);
+        result?.Should().Be(catalogType);
     }
 
     [Fact]
     public async Task UpdateCatalogTypeAsync_Failed()
     {
         // arrange
-        int? testResult = null;
+        CatalogType? testResult = null;
 
         var catalogType = new CatalogType
         {
@@ -311,6 +281,32 @@ public class CatalogTypeServiceTest
 
         // assert
         result.Should().BeNull();
+    }
+    
+    [Fact]
+    public async Task UpdateCatalogTypeAsync_WithDefaultValues_Success()
+    {
+        // arrange
+        var catalogType = new CatalogType
+        {
+            Id = 1,
+            Type = "TestName"
+        };
+
+        var updateTypeRequest = new UpdateTypeRequest();
+
+        catalogType.Type = updateTypeRequest.Type ?? catalogType.Type;
+
+        _catalogTypeRepository.Setup(repository => repository.UpdateAsync(
+            It.Is<CatalogType>(type => type == catalogType))
+        ).ReturnsAsync(catalogType);
+
+        // act
+        var result = await _catalogTypeService.UpdateCatalogTypeAsync(updateTypeRequest, catalogType);
+
+        // assert
+        result.Should().NotBeNull();
+        result?.Should().Be(catalogType);
     }
 
     [Fact]
