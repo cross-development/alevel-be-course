@@ -1,4 +1,6 @@
-﻿using System.Web;
+﻿using System.Net.Mime;
+using System.Text;
+using System.Web;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using EShop.Configurations;
@@ -22,35 +24,27 @@ public sealed class HttpClientService : IHttpClientService
         _logger = logger;
     }
 
-    public Task<TResponse> GetAsync<TResponse>(string url, HttpMethod method) =>
-         GetAsync<TResponse, object>(url, method, null);
+    public Task<TResponse> SendAsync<TResponse>(string url, HttpMethod method) =>
+        SendAsync<TResponse, object, object>(url, method);
 
-    public async Task<TResponse> GetAsync<TResponse, TRequest>(string url, HttpMethod method, TRequest request)
+    public Task<TResponse> SendAsync<TResponse, TRequest>(string url, HttpMethod method, TRequest request) =>
+        SendAsync<TResponse, object, object>(url, method, request);
+
+    public async Task<TResponse> SendAsync<TResponse, TRequest, TContent>(
+        string url, HttpMethod method, TRequest request = default, TContent content = default)
     {
         var client = _clientFactory.CreateClient();
 
-        var builder = new UriBuilder($"{_apiOptions.ApiUrl}{url}");
-        var query = HttpUtility.ParseQueryString(builder.Query);
+        var httpMessage = new HttpRequestMessage();
 
-        if (request != null)
-        {
-            foreach (var property in request.GetType().GetProperties())
-            {
-                query[property.Name] = property.GetValue(request)?.ToString();
+        var queryString = GetQueryString(request);
+        var stringContent = GetStringContent(content);
 
-                _logger.LogInformation($"[HttpClientService]: QUERY PARAM: {property.Name}, VALUE: {query[property.Name]}");
-            }
-        }
+        httpMessage.RequestUri = new Uri($"{_apiOptions.ApiUrl}{url}{queryString}");
+        httpMessage.Content = stringContent;
+        httpMessage.Method = method;
 
-        builder.Query = query.ToString() ?? string.Empty;
-
-        _logger.LogInformation($"[HttpClientService]: BUILDER QUERY IS: {builder.Query}");
-
-        var requestUri = builder.Uri.ToString();
-
-        _logger.LogInformation($"[HttpClientService]: REQUEST URI IS: {requestUri}");
-
-        var result = await client.GetAsync(requestUri);
+        var result = await client.SendAsync(httpMessage);
 
         if (!result.IsSuccessStatusCode)
         {
@@ -62,5 +56,38 @@ public sealed class HttpClientService : IHttpClientService
         var response = JsonConvert.DeserializeObject<TResponse>(resultContent);
 
         return response;
+    }
+
+    private string GetQueryString<TRequest>(TRequest request)
+    {
+        if (request == null)
+        {
+            return string.Empty;
+        }
+
+        var builder = new UriBuilder();
+
+        var query = HttpUtility.ParseQueryString(builder.Query);
+
+        foreach (var property in request.GetType().GetProperties())
+        {
+            query[property.Name] = property.GetValue(request)?.ToString();
+        }
+
+        builder.Query = query.ToString() ?? string.Empty;
+
+        _logger.LogInformation($"[HttpClientService] --> BUILDER QUERY: {builder.Query}");
+
+        return builder.Query;
+    }
+
+    private StringContent GetStringContent<TContent>(TContent content)
+    {
+        var serializedContent = JsonConvert.SerializeObject(content);
+        var stringContent = new StringContent(serializedContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+        _logger.LogInformation($"[HttpClientService] --> STRING CONTENT: {stringContent}");
+
+        return stringContent;
     }
 }
