@@ -49,8 +49,8 @@ services:
         - BaseUrl=http://localhost:5002
         - Redis__Host=localhost:6380
         - Redis__CacheTimeout=00:00:10
-    # depends_on:
-        # - redis
+    depends_on:
+        - redis
     ports:
         - 5002:5002
 
@@ -60,11 +60,14 @@ services:
       context: .
       dockerfile: HW_6_6/Identity/IdentityServer/Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5003
-      - WebClientUrl=http://localhost:5000
-      - CatalogUrl=http://localhost:5001
-      - BasketUrl=http://localhost:5002
+        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_URLS=http://+:5003
+        - WebClientUrl=http://localhost:5000
+        - CatalogUrl=http://localhost:5001
+        - BasketUrl=http://localhost:5002
+        - ConnectionStrings__DefaultConnection=server=localhost;port=5433;database=eshopidentity;uid=postgres;password=postgrespw
+    depends_on:
+        - postgres
     ports:
       - 5003:5003
 
@@ -87,11 +90,11 @@ services:
     ports:
         - 5433:5432
 
-  # redis:
-  #   container_name: redis
-  #   image: redis:bookworm
-  #   ports:
-  #     - 6380:6379
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - 6380:6379
 
   nginx:
     container_name: nginx

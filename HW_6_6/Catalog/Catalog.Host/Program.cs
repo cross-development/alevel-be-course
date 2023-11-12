@@ -28,6 +28,8 @@ builder.Services.AddSwaggerGen();
 builder.AddBaseConfiguration();
 builder.Services.Configure<CatalogConfiguration>(configuration.GetSection("Api"));
 
+//builder.Services.AddAuthorization(configuration);
+
 builder.Services.AddTransient<ICatalogItemRepository, CatalogItemRepository>();
 builder.Services.AddTransient<ICatalogBrandRepository, CatalogBrandRepository>();
 builder.Services.AddTransient<ICatalogTypeRepository, CatalogTypeRepository>();
@@ -57,7 +59,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
-    options.SwaggerEndpoint($"{configuration["BaseUrl"]}/swagger/v1/swagger.json", "Catalog.API V1");
+    options.SwaggerEndpoint($"{configuration["Api:BaseUrl"]}/swagger/v1/swagger.json", "Catalog.API V1");
     //options.OAuthClientId("catalog_swagger_ui");
     //options.OAuthAppName("Catalog Swagger UI");
 });
