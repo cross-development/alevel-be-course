@@ -1,12 +1,15 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Infrastructure.Helpers;
+using Infrastructure.Identity;
 using Basket.Host.Models.Responses;
 using Basket.Host.Services.Interfaces;
 
 namespace Basket.Host.Controllers;
 
 [ApiController]
+[Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
 [Route(ComponentDefaults.DefaultRouteV1)]
 public class BasketBffController : ControllerBase
 {
@@ -20,6 +23,7 @@ public class BasketBffController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> LogMessage()
@@ -32,6 +36,7 @@ public class BasketBffController : ControllerBase
     }
 
     [HttpGet]
+    [Scope(AuthScopes.BasketApiScope)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(GetBasketResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Items()

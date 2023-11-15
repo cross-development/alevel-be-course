@@ -1,9 +1,11 @@
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Infrastructure.Data;
 using Infrastructure.Data.Interfaces;
 using Infrastructure.Filters;
 using Infrastructure.Helpers;
+using Infrastructure.Identity;
 using Infrastructure.Extensions;
 using Catalog.Host.Configurations;
 using Catalog.Host.Data;
@@ -23,12 +25,42 @@ builder.Services.AddControllers(options =>
 });
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "eShop - Catalog HTTP API",
+        Version = "v1",
+        Description = "The Catalog Service HTTP API"
+    });
+
+    var authority = configuration["Authorization:Authority"];
+
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.OAuth2,
+        Flows = new OpenApiOAuthFlows()
+        {
+            Implicit = new OpenApiOAuthFlow()
+            {
+                AuthorizationUrl = new Uri($"{authority}/connect/authorize"),
+                TokenUrl = new Uri($"{authority}/connect/token"),
+                Scopes = new Dictionary<string, string>()
+                {
+                    { AuthScopes.WebClientScope, AuthScopes.WebClientScope },
+                    { AuthScopes.CatalogApiScope, AuthScopes.CatalogApiScope }
+                }
+            }
+        }
+    });
+
+    options.OperationFilter<AuthorizeCheckOperationFilter>();
+});
 
 builder.AddBaseConfiguration();
 builder.Services.Configure<CatalogConfiguration>(configuration.GetSection("Api"));
 
-//builder.Services.AddAuthorization(configuration);
+builder.Services.AddAuthorization(configuration);
 
 builder.Services.AddTransient<ICatalogItemRepository, CatalogItemRepository>();
 builder.Services.AddTransient<ICatalogBrandRepository, CatalogBrandRepository>();
@@ -60,15 +92,15 @@ app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint($"{configuration["Api:BaseUrl"]}/swagger/v1/swagger.json", "Catalog.API V1");
-    //options.OAuthClientId("catalog_swagger_ui");
-    //options.OAuthAppName("Catalog Swagger UI");
+    options.OAuthClientId("catalog_swagger_ui");
+    options.OAuthAppName("Catalog Swagger UI");
 });
 
 app.UseRouting();
 app.UseCors("CorsPolicy");
 
-//app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapDefaultControllerRoute();
 app.MapControllers();

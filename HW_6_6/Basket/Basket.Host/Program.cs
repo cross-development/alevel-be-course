@@ -1,6 +1,8 @@
+using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Infrastructure.Filters;
 using Infrastructure.Helpers;
+using Infrastructure.Identity;
 using Infrastructure.Extensions;
 using Basket.Host.Services;
 using Basket.Host.Services.Interfaces;
@@ -17,12 +19,41 @@ builder.Services.AddControllers(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "eShop - Basket HTTP API",
+        Version = "v1",
+        Description = "The Basket Service HTTP API"
+    });
+
+    var authority = configuration["Authorization:Authority"];
+
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.OAuth2,
+        Flows = new OpenApiOAuthFlows()
+        {
+            Implicit = new OpenApiOAuthFlow()
+            {
+                AuthorizationUrl = new Uri($"{authority}/connect/authorize"),
+                TokenUrl = new Uri($"{authority}/connect/token"),
+                Scopes = new Dictionary<string, string>()
+                {
+                    { AuthScopes.WebClientScope, AuthScopes.WebClientScope },
+                }
+            }
+        }
+    });
+
+    options.OperationFilter<AuthorizeCheckOperationFilter>();
+});
 
 builder.AddBaseConfiguration();
 builder.Services.Configure<RedisConfiguration>(configuration.GetSection("Redis"));
 
-//builder.Services.AddAuthorization(configuration);
+builder.Services.AddAuthorization(configuration);
 
 builder.Services.AddTransient<IRedisCacheConnectionService, RedisCacheConnectionService>();
 builder.Services.AddTransient<ICacheService, CacheService>();
@@ -45,15 +76,15 @@ app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint($"{configuration["Api:BaseUrl"]}/swagger/v1/swagger.json", "Basket.API V1");
-    //options.OAuthClientId("basket_swagger_ui");
-    //options.OAuthAppName("Basket Swagger UI");
+    options.OAuthClientId("basket_swagger_ui");
+    options.OAuthAppName("Basket Swagger UI");
 });
 
 app.UseRouting();
 app.UseCors("CorsPolicy");
 
-//app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapDefaultControllerRoute();
 app.MapControllers();

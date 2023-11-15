@@ -1,4 +1,5 @@
 ﻿using Duende.IdentityServer.Models;
+using Infrastructure.Identity;
 
 namespace IdentityServer;
 
@@ -14,12 +15,38 @@ public static class Config
     public static IEnumerable<ApiScope> ApiScopes =>
         new ApiScope[]
         {
-            new ApiScope("catalog_api", "Catalog api full access"),
-            new ApiScope("basket_api", "Basket api full access"),
-            new ApiScope("web_client", "Web client full access"),
+            new ApiScope(AuthScopes.CatalogApiScope, "Catalog api full access"),
+            new ApiScope(AuthScopes.BasketApiScope, "Basket api full access"),
+            new ApiScope(AuthScopes.WebClientScope, "Web client full access"),
         };
 
-    public static IEnumerable<Client> Clients =>
+    //public static IEnumerable<ApiResource> ApiResources =>
+    //    new ApiResource[]
+    //    {
+    //        new ApiResource("alevelwebsite.com")
+    //        {
+    //            Scopes = new List<string>
+    //            {
+    //                AuthScopes.WebClientScope
+    //            },
+    //        },
+    //        new ApiResource("catalog_api")
+    //        {
+    //            Scopes = new List<string>
+    //            {
+    //                AuthScopes.CatalogApiScope,
+    //            },
+    //        },
+    //        new ApiResource("basket_api")
+    //        {
+    //            Scopes = new List<string>
+    //            {
+    //                AuthScopes.BasketApiScope
+    //            },
+    //        }
+    //    };
+
+    public static IEnumerable<Client> Clients(ConfigurationManager configuration) =>
         new Client[]
         {
             new Client
@@ -28,8 +55,8 @@ public static class Config
                 ClientName = "Web Client PKCE",
                 AllowedGrantTypes = GrantTypes.Code,
                 ClientSecrets = { new Secret("secret".Sha256()) },
-                RedirectUris = { "http://localhost:5000/signin-oidc" },
-                AllowedScopes = { "openid", "profile", "web_client" },
+                RedirectUris = { $"{configuration["Api:WebClientUrl"]}/signin-oidc" },
+                AllowedScopes = { AuthScopes.OpenIdScope, AuthScopes.ProfileScope, AuthScopes.WebClientScope },
                 RequirePkce = true,
                 RequireConsent = false
             },
@@ -45,9 +72,16 @@ public static class Config
                 ClientName = "Catalog Swagger UI",
                 AllowedGrantTypes = GrantTypes.Implicit,
                 AllowAccessTokensViaBrowser = true,
-                RedirectUris = { "http://localhost:5001/swagger/oauth2-redirect.html" },
-                PostLogoutRedirectUris = { "http://localhost:5001/swagger/" },
-                AllowedScopes = { "web_client", "catalog_api" }
+                RedirectUris = { $"{configuration["Api:CatalogUrl"]}/swagger/oauth2-redirect.html" },
+                PostLogoutRedirectUris = { $"{configuration["Api:CatalogUrl"]}/swagger/" },
+                AllowedScopes = { AuthScopes.WebClientScope, AuthScopes.CatalogApiScope }
+            },
+            new Client
+            {
+                ClientId = "basket_api",
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                ClientSecrets = { new Secret("secret".Sha256()) },
+                AllowedScopes = { AuthScopes.CatalogApiScope }
             },
             new Client
             {
@@ -55,9 +89,9 @@ public static class Config
                 ClientName = "Basket Swagger UI",
                 AllowedGrantTypes = GrantTypes.Implicit,
                 AllowAccessTokensViaBrowser = true,
-                RedirectUris = { "http://localhost:5002/swagger/oauth2-redirect.html" },
-                PostLogoutRedirectUris = { "http://localhost:5002/swagger/" },
-                AllowedScopes = { "web_client", "basket_api" }
+                RedirectUris = { $"{configuration["Api:BasketUrl"]}/swagger/oauth2-redirect.html" },
+                PostLogoutRedirectUris = { $"{configuration["Api:BasketUrl"]}/swagger/" },
+                AllowedScopes = { AuthScopes.WebClientScope, AuthScopes.BasketApiScope }
             },
         };
 }

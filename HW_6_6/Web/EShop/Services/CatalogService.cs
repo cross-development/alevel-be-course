@@ -21,7 +21,7 @@ public sealed class CatalogService : ICatalogService
     public async Task<CatalogResponseDto> GetCatalogItems(CatalogRequestDto catalogRequest)
     {
         var result = await _httpClientService.SendAsync<CatalogResponseDto, CatalogRequestDto>(
-            $"{_apiOptions.CatalogPath}/items",
+            $"{_apiOptions.CatalogUrl}{_apiOptions.CatalogPath}/items",
             HttpMethod.Get,
             catalogRequest);
 
@@ -31,7 +31,7 @@ public sealed class CatalogService : ICatalogService
     public async Task<IEnumerable<SelectListItem>> GetBrands()
     {
         var result = await _httpClientService.SendAsync<BrandResponseDto>(
-            $"{_apiOptions.CatalogPath}/brands",
+            $"{_apiOptions.CatalogUrl}{_apiOptions.CatalogPath}/brands",
             HttpMethod.Get);
 
         var listOfBrands = result.Data
@@ -44,7 +44,7 @@ public sealed class CatalogService : ICatalogService
     public async Task<IEnumerable<SelectListItem>> GetTypes()
     {
         var result = await _httpClientService.SendAsync<TypeResponseDto>(
-            $"{_apiOptions.CatalogPath}/types",
+            $"{_apiOptions.CatalogUrl}{_apiOptions.CatalogPath}/types",
             HttpMethod.Get);
 
         var listOfTypes = result.Data

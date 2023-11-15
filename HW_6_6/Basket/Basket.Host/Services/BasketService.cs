@@ -7,7 +7,7 @@ public sealed class BasketService : IBasketService
 {
     private readonly ICacheService _cacheService;
 
-    public BasketService(ICacheService cacheService, ILogger<BasketService> logger)
+    public BasketService(ICacheService cacheService)
     {
         _cacheService = cacheService;
     }
