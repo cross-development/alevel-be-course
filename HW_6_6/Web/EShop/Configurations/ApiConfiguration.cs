@@ -13,4 +13,6 @@ public sealed class ApiConfiguration
     public string IdentityUrl { get; set; }
 
     public string RedirectUri { get; set; }
+    
+    public string PostLogoutRedirectUri { get; set; }
 }

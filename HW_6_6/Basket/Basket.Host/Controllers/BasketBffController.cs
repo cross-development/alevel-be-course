@@ -36,16 +36,15 @@ public class BasketBffController : ControllerBase
     }
 
     [HttpGet]
-    [Scope(AuthScopes.BasketApiScope)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(GetBasketResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Items()
     {
         var userId = User.Claims.FirstOrDefault(claim => claim.Type == "sub")?.Value;
 
-        var response = await _basketService.GetBasketAsync(userId);
-
         _logger.LogInformation($"[BasketBffController: Items] --> User id is {userId}");
+        
+        var response = await _basketService.GetBasketAsync(userId);
 
         return Ok(response);
     }

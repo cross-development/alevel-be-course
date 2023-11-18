@@ -1,7 +1,7 @@
 namespace Infrastructure.Identity;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public sealed class ScopeAttribute : Attribute
+public class ScopeAttribute : Attribute
 {
     public ScopeAttribute(string scopeName)
     {

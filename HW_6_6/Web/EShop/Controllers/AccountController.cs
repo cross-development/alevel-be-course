@@ -22,17 +22,15 @@ public class AccountController : Controller
         _identityParser = identityParser;
     }
 
-    [HttpGet]
     public IActionResult SignIn()
     {
         var user = _identityParser.Parse(User);
 
         _logger.LogInformation($"User {user.Name} authenticated");
-        
+
         return RedirectToAction(nameof(HomeController.Index), "Home");
     }
 
-    [HttpGet]
     public async Task<IActionResult> Signout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

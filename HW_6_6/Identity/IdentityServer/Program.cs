@@ -20,7 +20,9 @@ try
         .ConfigureServices()
         .ConfigurePipeline();
 
-    SeedData.EnsureSeedData(app);
+    // Log.Information("Seeding database...");
+    // SeedData.EnsureSeedData(app);
+    // Log.Information("Done seeding database. Exiting.");
 
     app.Run();
 }

@@ -8,18 +8,19 @@ services:
       dockerfile: HW_6_6/Web/EShop/Dockerfile
     environment:
         - ASPNETCORE_ENVIRONMENT=Development
-        - ASPNETCORE_URLS=http://+:5000
+        - ASPNETCORE_URLS=http://+:3000
         - Authorization__Authority=http://localhost:5003
         - Api__CatalogUrl=http://localhost:5001/api/v1/
         - Api__BasketUrl=http://localhost:5002/api/v1/
         - Api__IdentityUrl=http://localhost:5003
-        - Api__CallbackUrl=http://localhost/
-        - Api__RedirectUri=http://localhost/signin-oidc
+        - Api__CallbackUrl=http://localhost:5003/
+        - Api__RedirectUri=http://localhost:5003/signin-oidc
+        - Api__PostLogoutRedirectUri=http://localhost:5003/signout-callback-oidc
     depends_on:
         - api.catalog
         - server.identity
     ports:
-        - 5000:5000
+        - 3000:3000
     
   api.catalog:
     container_name: api.catalog
@@ -62,7 +63,7 @@ services:
     environment:
         - ASPNETCORE_ENVIRONMENT=Development
         - ASPNETCORE_URLS=http://+:5003
-        - WebClientUrl=http://localhost:5000
+        - WebClientUrl=http://localhost:3000
         - CatalogUrl=http://localhost:5001
         - BasketUrl=http://localhost:5002
         - ConnectionStrings__DefaultConnection=server=localhost;port=5433;database=eshopidentity;uid=postgres;password=postgrespw

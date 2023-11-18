@@ -12,39 +12,30 @@ public static class Config
             new IdentityResources.Profile(),
         };
 
+    public static IEnumerable<ApiResource> ApiResources =>
+        new List<ApiResource>
+        {
+            new ApiResource(AuthResource.WebClient, "Web client")
+            {
+                Scopes = { AuthScope.WebClient }
+            },
+            new ApiResource(AuthResource.CatalogApi, "Catalog API")
+            {
+                Scopes = { AuthScope.CatalogApi }
+            },
+            new ApiResource(AuthResource.BasketApi, "Basket API")
+            {
+                Scopes = { AuthScope.BasketApi }
+            }
+        };
+
     public static IEnumerable<ApiScope> ApiScopes =>
         new ApiScope[]
         {
-            new ApiScope(AuthScopes.CatalogApiScope, "Catalog api full access"),
-            new ApiScope(AuthScopes.BasketApiScope, "Basket api full access"),
-            new ApiScope(AuthScopes.WebClientScope, "Web client full access"),
+            new ApiScope(AuthScope.WebClient, "Web client full access"),
+            new ApiScope(AuthScope.CatalogApi, "Catalog api full access"),
+            new ApiScope(AuthScope.BasketApi, "Basket api full access"),
         };
-
-    //public static IEnumerable<ApiResource> ApiResources =>
-    //    new ApiResource[]
-    //    {
-    //        new ApiResource("alevelwebsite.com")
-    //        {
-    //            Scopes = new List<string>
-    //            {
-    //                AuthScopes.WebClientScope
-    //            },
-    //        },
-    //        new ApiResource("catalog_api")
-    //        {
-    //            Scopes = new List<string>
-    //            {
-    //                AuthScopes.CatalogApiScope,
-    //            },
-    //        },
-    //        new ApiResource("basket_api")
-    //        {
-    //            Scopes = new List<string>
-    //            {
-    //                AuthScopes.BasketApiScope
-    //            },
-    //        }
-    //    };
 
     public static IEnumerable<Client> Clients(ConfigurationManager configuration) =>
         new Client[]
@@ -53,12 +44,13 @@ public static class Config
             {
                 ClientId = "web_client_pkce",
                 ClientName = "Web Client PKCE",
+                RequirePkce = true,
+                RequireConsent = false,
                 AllowedGrantTypes = GrantTypes.Code,
                 ClientSecrets = { new Secret("secret".Sha256()) },
                 RedirectUris = { $"{configuration["Api:WebClientUrl"]}/signin-oidc" },
-                AllowedScopes = { AuthScopes.OpenIdScope, AuthScopes.ProfileScope, AuthScopes.WebClientScope },
-                RequirePkce = true,
-                RequireConsent = false
+                PostLogoutRedirectUris = { $"{configuration["Api:WebClientUrl"]}/signout-callback-oidc" },
+                AllowedScopes = { AuthScope.OpenId, AuthScope.Profile, AuthScope.WebClient }
             },
             new Client
             {
@@ -74,14 +66,13 @@ public static class Config
                 AllowAccessTokensViaBrowser = true,
                 RedirectUris = { $"{configuration["Api:CatalogUrl"]}/swagger/oauth2-redirect.html" },
                 PostLogoutRedirectUris = { $"{configuration["Api:CatalogUrl"]}/swagger/" },
-                AllowedScopes = { AuthScopes.WebClientScope, AuthScopes.CatalogApiScope }
+                AllowedScopes = { AuthScope.WebClient, AuthScope.CatalogApi }
             },
             new Client
             {
                 ClientId = "basket_api",
                 AllowedGrantTypes = GrantTypes.ClientCredentials,
                 ClientSecrets = { new Secret("secret".Sha256()) },
-                AllowedScopes = { AuthScopes.CatalogApiScope }
             },
             new Client
             {
@@ -91,7 +82,7 @@ public static class Config
                 AllowAccessTokensViaBrowser = true,
                 RedirectUris = { $"{configuration["Api:BasketUrl"]}/swagger/oauth2-redirect.html" },
                 PostLogoutRedirectUris = { $"{configuration["Api:BasketUrl"]}/swagger/" },
-                AllowedScopes = { AuthScopes.WebClientScope, AuthScopes.BasketApiScope }
+                AllowedScopes = { AuthScope.WebClient, AuthScope.BasketApi }
             },
         };
 }

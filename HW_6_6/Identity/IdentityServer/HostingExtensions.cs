@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using IdentityServer.Data;
 using IdentityServer.Models;
-//using IdentityServer.Services;
 using IdentityServer.Configurations;
 
 namespace IdentityServer;
@@ -32,10 +31,10 @@ internal static class HostingExtensions
                 options.Events.RaiseSuccessEvents = true;
             })
             .AddInMemoryIdentityResources(Config.IdentityResources)
+            .AddInMemoryApiResources(Config.ApiResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
             .AddInMemoryClients(Config.Clients(builder.Configuration))
             .AddAspNetIdentity<ApplicationUser>();
-        //.AddProfileService<CustomProfileService>();
 
         builder.Services.ConfigureApplicationCookie(options =>
         {

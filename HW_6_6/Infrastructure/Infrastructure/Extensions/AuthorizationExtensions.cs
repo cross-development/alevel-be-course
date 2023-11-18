@@ -17,8 +17,7 @@ public static class AuthorizationExtensions
 
         services.AddSingleton<IAuthorizationHandler, ScopeHandler>();
 
-        services
-            .AddAuthentication()
+        services.AddAuthentication()
             .AddJwtBearer(AuthScheme.Internal, options =>
             {
                 options.Authority = authority;

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace Infrastructure.Identity;
 
-public sealed class ScopeHandler : AuthorizationHandler<ScopeRequirement>
+public class ScopeHandler : AuthorizationHandler<ScopeRequirement>
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ScopeRequirement requirement)
     {
@@ -46,7 +46,8 @@ public sealed class ScopeHandler : AuthorizationHandler<ScopeRequirement>
         }
 
         var scopeAttribute = (ScopeAttribute)descriptor.MethodInfo.GetCustomAttribute(typeof(ScopeAttribute))
-                             ?? (ScopeAttribute)descriptor.ControllerTypeInfo.GetCustomAttribute(typeof(ScopeAttribute));
+                             ?? (ScopeAttribute)descriptor.ControllerTypeInfo
+                                 .GetCustomAttribute(typeof(ScopeAttribute));
 
         return scopeAttribute?.ScopeName;
     }

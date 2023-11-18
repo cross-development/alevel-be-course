@@ -11,7 +11,7 @@ namespace Catalog.Host.Controllers;
 
 [ApiController]
 [Authorize(Policy = AuthPolicy.AllowClientPolicy)]
-[Scope(AuthScopes.CatalogApiScope)]
+[Scope(AuthScope.CatalogApi)]
 [Route(ComponentDefaults.DefaultRouteV1)]
 public sealed class CatalogItemController : ControllerBase
 {

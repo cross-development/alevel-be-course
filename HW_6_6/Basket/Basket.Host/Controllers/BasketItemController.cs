@@ -10,7 +10,7 @@ namespace Basket.Host.Controllers;
 
 [ApiController]
 [Authorize(Policy = AuthPolicy.AllowClientPolicy)]
-[Scope(AuthScopes.BasketApiScope)]
+[Scope(AuthScope.BasketApi)]
 [Route(ComponentDefaults.DefaultRouteV1)]
 public class BasketItemController : ControllerBase
 {

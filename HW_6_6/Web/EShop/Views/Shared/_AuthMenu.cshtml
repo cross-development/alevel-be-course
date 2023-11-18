@@ -5,26 +5,26 @@
 
 @if (Context.User.Identity.IsAuthenticated)
 {
-    <div class="d-flex">
-        <form asp-area="" asp-controller="Account" asp-action="Signout" method="post" id="logoutForm" class="navbar-right">
+    <div class="d-flex justify-content-end">
+        <div class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 @UserManager.Parse(User).Name
             </a>
 
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li>
-                    <a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit()">
+                    <a asp-area="" asp-controller="Account" asp-action="Signout" class="dropdown-item">
                         <img src="~/images/logout.png" alt="logout">
                         Log Out
                     </a>
                 </li>
             </ul>
-        </form>
+        </div>
     </div>
 }
 else
 {
-    <div class="d-flex">
+    <div class="d-flex justify-content-end">
         <a type="button" class="btn btn-outline-primary" asp-area="" asp-controller="Account" asp-action="SignIn">
             Login
         </a>

@@ -39,9 +39,9 @@ builder.Services.AddAuthentication(options =>
         options.GetClaimsFromUserInfoEndpoint = true;
         options.RequireHttpsMetadata = false;
         options.UsePkce = true;
-        options.Scope.Add(AuthScopes.OpenIdScope);
-        options.Scope.Add(AuthScopes.ProfileScope);
-        options.Scope.Add(AuthScopes.WebClientScope);
+        options.Scope.Add(AuthScope.OpenId);
+        options.Scope.Add(AuthScope.Profile);
+        options.Scope.Add(AuthScope.WebClient);
     });
 
 builder.AddBaseConfiguration();

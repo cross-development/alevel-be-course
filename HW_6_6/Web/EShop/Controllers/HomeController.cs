@@ -17,7 +17,6 @@ public class HomeController : Controller
         _catalogService = catalogService;
     }
 
-    [HttpGet]
     public async Task<IActionResult> Index(int? brandId, int? typeId, int? page)
     {
         // Making a query string for the request
