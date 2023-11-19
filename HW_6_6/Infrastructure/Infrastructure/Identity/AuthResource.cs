@@ -6,5 +6,5 @@ public static class AuthResource
 
     public const string BasketApi = "basket";
 
-    public const string WebClient = "localhost";
+    public const string WebClient = "www.alevelwebsite.com";
 }

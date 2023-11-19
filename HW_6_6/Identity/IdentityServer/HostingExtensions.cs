@@ -37,7 +37,7 @@ internal static class HostingExtensions
 
         builder.Services.ConfigureApplicationCookie(options =>
         {
-            options.Cookie.SameSite = SameSiteMode.Lax;
+            options.Cookie.SameSite = SameSiteMode.Strict;
         });
 
         builder.Services.AddAuthentication();

@@ -2,13 +2,13 @@ namespace Basket.UnitTests.Services;
 
 public class CacheServiceTest
 {
-    private readonly ICacheService _cacheService;
-
     private readonly Mock<IOptions<RedisConfiguration>> _config;
     private readonly Mock<ILogger<CacheService>> _logger;
     private readonly Mock<IRedisCacheConnectionService> _redisCacheConnectionService;
     private readonly Mock<IConnectionMultiplexer> _connectionMultiplexer;
     private readonly Mock<IDatabase> _redisDataBase;
+    
+    private readonly ICacheService _cacheService;
 
     public CacheServiceTest()
     {
@@ -29,7 +29,6 @@ public class CacheServiceTest
         _redisCacheConnectionService
             .Setup(cache => cache.Connection)
             .Returns(_connectionMultiplexer.Object);
-
 
         _cacheService = new CacheService(_logger.Object, _config.Object, _redisCacheConnectionService.Object);
     }
@@ -58,13 +57,13 @@ public class CacheServiceTest
 
         // assert
         _logger.Verify(logger => logger.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((o, t) =>
-                    o.ToString()!.Contains($"The data was cached for the key: {testEntity.UserId}")),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
-            Times.Never);
+            LogLevel.Information,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((o, t) =>
+                o.ToString().Contains($"The data was cached for the key: {testEntity.UserId}")),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception, string>>()
+        ), Times.Never);
     }
 
     [Fact]
@@ -90,13 +89,13 @@ public class CacheServiceTest
 
         // assert
         _logger.Verify(logger => logger.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((o, t) =>
-                    o.ToString().Contains($"The data was updated for the key: {testEntity.UserId}")),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-            Times.Once);
+            LogLevel.Information,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((o, t) =>
+                o.ToString().Contains($"The data was updated for the key: {testEntity.UserId}")),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception, string>>()
+        ), Times.Once);
     }
 
     [Fact]
@@ -122,13 +121,13 @@ public class CacheServiceTest
 
         // assert
         _logger.Verify(logger => logger.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((o, t) =>
-                    o.ToString()!.Contains($"The data was cached for the key: {testEntity.UserId}")),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
-            Times.Never);
+            LogLevel.Information,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((o, t) =>
+                o.ToString().Contains($"The data was cached for the key: {testEntity.UserId}")),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception, string>>()
+        ), Times.Never);
     }
 
     [Fact]

@@ -7,13 +7,21 @@ namespace EShop.Services;
 
 public sealed class IdentityParser : IIdentityParser<ApplicationUser>
 {
+    private readonly ILogger<IdentityParser> _logger;
+
+    public IdentityParser(ILogger<IdentityParser> logger)
+    {
+        _logger = logger;
+    }
+
     public ApplicationUser Parse(IPrincipal principal)
     {
         if (principal is ClaimsPrincipal claims)
         {
+            _logger.LogInformation($"[IdentityParser: Parse] --> Provided principal is the ClaimsPrincipal type");
+
             return new ApplicationUser
             {
-
                 CardHolderName = claims.Claims.FirstOrDefault(x => x.Type == "card_holder")?.Value ?? "",
                 CardNumber = claims.Claims.FirstOrDefault(x => x.Type == "card_number")?.Value ?? "",
                 Expiration = claims.Claims.FirstOrDefault(x => x.Type == "card_expiration")?.Value ?? "",
@@ -31,6 +39,8 @@ public sealed class IdentityParser : IIdentityParser<ApplicationUser>
                 ZipCode = claims.Claims.FirstOrDefault(x => x.Type == "address_zip_code")?.Value ?? ""
             };
         }
+
+        _logger.LogInformation($"[IdentityParser: Parse] --> Provided principal is some different type");
 
         throw new ArgumentException(message: "The principal must be a ClaimsPrincipal", paramName: nameof(principal));
     }

@@ -50,7 +50,7 @@ public static class Config
                 ClientSecrets = { new Secret("secret".Sha256()) },
                 RedirectUris = { $"{configuration["Api:WebClientUrl"]}/signin-oidc" },
                 PostLogoutRedirectUris = { $"{configuration["Api:WebClientUrl"]}/signout-callback-oidc" },
-                AllowedScopes = { AuthScope.OpenId, AuthScope.Profile, AuthScope.WebClient }
+                AllowedScopes = { AuthScope.OpenId, AuthScope.Profile, AuthScope.WebClient, AuthScope.BasketApi }
             },
             new Client
             {

@@ -26,13 +26,14 @@ public sealed class CacheService : ICacheService
 
     public async Task<T> GetAsync<T>(string key)
     {
+        _logger.LogInformation($"[CacheService: GetAsync] --> The key for getting cache data is: {key}");
+
         var redis = GetRedisDatabase();
 
         var serialized = await redis.StringGetAsync(key);
 
         var cachedData = serialized.HasValue ? JsonConvert.DeserializeObject<T>(serialized.ToString()) : default;
 
-        _logger.LogInformation($"[CacheService: GetAsync] --> The cached data was received for the key: {key}");
         _logger.LogInformation($"[CacheService: GetAsync] --> The received cached data: {cachedData}");
 
         return cachedData;
@@ -40,21 +41,23 @@ public sealed class CacheService : ICacheService
 
     public async Task<bool> AddOrUpdateAsync<T>(string key, T value)
     {
+        _logger.LogInformation($"[CacheService: AddOrUpdateAsync] --> The key for caching data is: {key}");
+
         var redis = GetRedisDatabase();
 
         var serialized = JsonConvert.SerializeObject(value);
+
+        _logger.LogInformation($"[CacheService: AddOrUpdateAsync] --> The serialized data is: {serialized}");
 
         var isDataCached = await redis.StringSetAsync(key, serialized, _config.CacheTimeout);
 
         if (isDataCached)
         {
-            _logger.LogInformation($"[CacheService: AddOrUpdateAsync] --> The data was cached for the key: {key}");
-            _logger.LogInformation($"[CacheService: AddOrUpdateAsync] --> The cached data: {serialized}");
+            _logger.LogInformation($"[CacheService: AddOrUpdateAsync] --> The data was cached with the key: {key}");
         }
         else
         {
-            _logger.LogInformation($"[CacheService: AddOrUpdateAsync] --> The data was updated for the key: {key}");
-            _logger.LogInformation($"[CacheService: AddOrUpdateAsync] --> The updated data: {serialized}");
+            _logger.LogInformation($"[CacheService: AddOrUpdateAsync] --> The data was updated with the key: {key}");
         }
 
         return isDataCached;

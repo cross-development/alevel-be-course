@@ -19,13 +19,13 @@ public sealed class HttpClientService : IHttpClientService
     public HttpClientService(
         IHttpClientFactory clientFactory,
         IHttpContextAccessor httpContextAccessor,
-        IOptions<ApiConfiguration> apiOptions,
         ILogger<HttpClientService> logger)
     {
         _clientFactory = clientFactory;
         _httpContextAccessor = httpContextAccessor;
         _logger = logger;
     }
+
     private string GetQueryString<TRequest>(TRequest request)
     {
         if (request == null)
