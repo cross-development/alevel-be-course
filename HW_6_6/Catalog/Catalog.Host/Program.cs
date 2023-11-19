@@ -47,8 +47,8 @@ builder.Services.AddSwaggerGen(options =>
                 TokenUrl = new Uri($"{authority}/connect/token"),
                 Scopes = new Dictionary<string, string>()
                 {
-                    { AuthScope.WebClient, AuthScope.WebClient },
-                    { AuthScope.CatalogApi, AuthScope.CatalogApi }
+                    { AuthScope.WebClient, "Web client full access" },
+                    { AuthScope.CatalogApi, "Catalog api full access" }
                 }
             }
         }

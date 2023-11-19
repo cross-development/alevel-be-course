@@ -13,7 +13,7 @@ public static class Config
         };
 
     public static IEnumerable<ApiResource> ApiResources =>
-        new List<ApiResource>
+        new ApiResource[]
         {
             new ApiResource(AuthResource.WebClient, "Web client")
             {

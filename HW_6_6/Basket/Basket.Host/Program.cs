@@ -41,8 +41,8 @@ builder.Services.AddSwaggerGen(options =>
                 TokenUrl = new Uri($"{authority}/connect/token"),
                 Scopes = new Dictionary<string, string>()
                 {
-                    { AuthScope.WebClient, AuthScope.WebClient },
-                    { AuthScope.BasketApi, AuthScope.BasketApi }
+                    { AuthScope.WebClient, "Web client full access" },
+                    { AuthScope.BasketApi, "Basket api full access" }
                 }
             }
         }

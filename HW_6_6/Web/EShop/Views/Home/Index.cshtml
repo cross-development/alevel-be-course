@@ -50,7 +50,7 @@
                 @foreach (var item in Model.CatalogItems)
                 {
                     <div class="col">
-                        <div class="card shadow-sm h-100">
+                        <div class="card shadow-sm h-100 position-relative">
                             <img width="100%"
                                  height="320"
                                  alt="@item.Name thumbnail"
@@ -64,7 +64,7 @@
                                     <p class="card-text">$@item.Price.ToString("N2")</p>
                                 </div>
 
-                                <div class="d-flex justify-content-end">
+                                <div class="d-flex justify-content-end position-absolute top-0 end-0">
                                     @if (item.AvailableStock <= 5)
                                     {
                                         <span class="badge bg-danger">Low stock</span>

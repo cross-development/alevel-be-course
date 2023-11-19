@@ -2,9 +2,9 @@ namespace Infrastructure.Identity;
 
 public static class AuthResource
 {
-    public const string CatalogApi = "catalog_api_resource";
+    public const string CatalogApi = "catalog";
 
-    public const string BasketApi = "basket_api_resource";
+    public const string BasketApi = "basket";
 
-    public const string WebClient = "web_client_resource";
+    public const string WebClient = "localhost";
 }
