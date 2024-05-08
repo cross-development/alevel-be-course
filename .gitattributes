@@ -1,0 +1,10 @@
+*.css linguist-detectable=false
+*.less linguist-detectable=false
+*.HTML linguist-detectable=false
+*.html linguist-detectable=false
+*.hta linguist-detectable=false
+*.htm linguist-detectable=false
+*.html.hl linguist-detectable=false
+*.inc linguist-detectable=false
+*.xht linguist-detectable=false
+*.xhtml linguist-detectable=false
